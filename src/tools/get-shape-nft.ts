@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { Alchemy, Network } from 'alchemy-sdk';
+import { Alchemy, Network, OwnedNftsResponse } from 'alchemy-sdk';
 
 export const schema = {
   address: z.string().describe('The wallet address to get NFTs for'),
@@ -52,60 +52,20 @@ export default async function getShapeNft({
       network: Network.SHAPE_SEPOLIA,
     });
 
-    const nftsResponse = await alchemy.nft.getNftsForOwner(address, {
-      pageSize,
-      pageKey,
-      omitMetadata: !withMetadata,
-    });
-
-    const nftCount = nftsResponse.totalCount;
-    const nfts = nftsResponse.ownedNfts;
-
-    let resultText = `Found ${nftCount} NFTs for address ${address} on Shape network:\n\n`;
-
-    if (nfts.length === 0) {
-      resultText += 'No NFTs found for this address.';
-    } else {
-      nfts.forEach((nft, index) => {
-        resultText += `${index + 1}. ${nft.name || 'Untitled'}\n`;
-        resultText += `   Contract: ${nft.contract.address}\n`;
-        resultText += `   Token ID: ${nft.tokenId}\n`;
-
-        if (nft.description) {
-          resultText += `   Description: ${nft.description.substring(0, 100)}${
-            nft.description.length > 100 ? '...' : ''
-          }\n`;
-        }
-
-        if (nft.image?.originalUrl) {
-          resultText += `   Image: ${nft.image.originalUrl}\n`;
-        }
-
-        if (nft.contract.name) {
-          resultText += `   Collection: ${nft.contract.name}\n`;
-        }
-
-        if (nft.contract.symbol) {
-          resultText += `   Symbol: ${nft.contract.symbol}\n`;
-        }
-
-        if (nft.tokenType) {
-          resultText += `   Type: ${nft.tokenType}\n`;
-        }
-
-        resultText += '\n';
-      });
-
-      if (nftsResponse.pageKey) {
-        resultText += `\nPagination available. Use pageKey: ${nftsResponse.pageKey} to get next page.`;
+    const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(
+      address,
+      {
+        pageSize,
+        pageKey,
+        omitMetadata: !withMetadata,
       }
-    }
+    );
 
     return {
       content: [
         {
           type: 'text',
-          text: resultText,
+          text: JSON.stringify(nftsResponse, null, 2),
         },
       ],
     };
