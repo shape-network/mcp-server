@@ -6,10 +6,14 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+      // "@/tools/*": ["src/tools/*"],
+      // "@/abi/*": ["src/abi/*"]
+    },
+    "types": []
   },
-  "include": [
-    "xmcp-env.d.ts",
-    "src/**/*.ts"
-  ]
+  "include": ["xmcp-env.d.ts", "src/**/*.ts"]
 }

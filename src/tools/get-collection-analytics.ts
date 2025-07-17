@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { Alchemy, Network, NftSaleMarketplace } from 'alchemy-sdk';
-import { config } from '../config';
+import { config } from '@/config';
 
 export const schema = {
   contractAddress: z
