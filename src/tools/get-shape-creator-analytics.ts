@@ -2,10 +2,10 @@ import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { AssetTransfersCategory } from 'alchemy-sdk';
 import { getContract } from 'viem';
-import { config } from '@/config';
-import { addresses } from '@/addresses';
-import { alchemyClient, publicClient } from '@/clients';
-import { abi as gasbackAbi } from '@/abi/gasback';
+import { config } from '../config';
+import { addresses } from '../addresses';
+import { alchemyClient, publicClient } from '../clients';
+import { abi as gasbackAbi } from '../abi/gasback';
 
 export const schema = {
   contractAddress: z

@@ -1,6 +1,6 @@
 import { createPublicClient, http } from 'viem';
 import { shape, shapeSepolia } from 'viem/chains';
-import { config } from '@/config';
+import { config } from './config';
 import { Alchemy, Network } from 'alchemy-sdk';
 
 export const alchemyClient = new Alchemy({

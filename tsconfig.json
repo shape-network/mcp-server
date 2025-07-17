@@ -7,11 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "./src",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "types": ["xmcp"]
+    "types": ["node"]
   },
   "include": ["xmcp-env.d.ts", "src/**/*.ts"]
 }
