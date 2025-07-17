@@ -6,10 +6,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["node"]
   },
-  "include": [
-    "xmcp-env.d.ts",
-    "src/**/*.ts"
-  ]
+  "include": ["xmcp-env.d.ts", "src/**/*.ts"]
 }
