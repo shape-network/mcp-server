@@ -10,10 +10,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-      // "@/tools/*": ["src/tools/*"],
-      // "@/abi/*": ["src/abi/*"]
     },
-    "types": []
+    "types": ["xmcp"]
   },
   "include": ["xmcp-env.d.ts", "src/**/*.ts"]
 }
