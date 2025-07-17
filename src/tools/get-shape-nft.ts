@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { Alchemy, Network, OwnedNftsResponse } from 'alchemy-sdk';
+import { config } from '../config';
+import { shape } from 'viem/chains';
 
 export const schema = {
   address: z.string().describe('The wallet address to get NFTs for'),
@@ -49,7 +51,7 @@ export default async function getShapeNft({
   try {
     const alchemy = new Alchemy({
       apiKey: alchemyApiKey,
-      network: Network.SHAPE_SEPOLIA,
+      network: config.isMainnet ? Network.SHAPE_MAINNET : Network.SHAPE_SEPOLIA,
     });
 
     const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(
