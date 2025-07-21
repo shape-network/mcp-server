@@ -1,6 +1,6 @@
 # Shape MCP Server
 
-A powerful Model Context Protocol (MCP) server for Shape Network, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's creator economy, NFT analytics, and blockchain data.
+Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's [gasback distribution](https://docs.shape.network/gasback), NFT analytics, and blockchain data.
 
 ## 🚀 Features
 
@@ -11,52 +11,17 @@ A powerful Model Context Protocol (MCP) server for Shape Network, built with [xm
 
 ## 🛠 Available Tools
 
-### 1. **Shape Creator Analytics** (`getShapeCreatorAnalytics`)
+### `getShapeCreatorAnalytics`
 
 Analyze Shape's unique creator economy including gasback earnings and contract performance.
 
-**Parameters:**
-
-- `contractAddress` - Contract address to analyze
-- `creatorAddress` - Creator/owner address (optional)
-- `fromBlock`/`toBlock` - Analysis time range
-- `includeTxDetails` - Include detailed transaction data
-
-**Returns:**
-
-- Estimated gasback earnings (80% of gas fees)
-- Transaction volume and unique user metrics
-- Contract interaction analytics
-- Revenue optimization insights
-
-### 2. **NFT Collection Analytics** (`getCollectionAnalytics`)
+### `getCollectionAnalytics`
 
 Comprehensive NFT collection data including floor prices and sales analytics.
 
-**Parameters:**
-
-- `contractAddress` - NFT collection contract address
-- `includeFloorPrice` - Include marketplace floor prices
-- `includeSalesHistory` - Include recent sales data
-- `salesHistoryLimit` - Number of sales to fetch (max 100)
-- `marketplace` - Filter by specific marketplace
-
-**Returns:**
-
-- Multi-marketplace floor prices (OpenSea, LooksRare, etc.)
-- Sales volume and average price metrics
-- Recent transaction history
-- Collection metadata and stats
-
-### 3. **Shape NFT Lookup** (`getShapeNft`)
+### `getShapeNft`
 
 Get NFTs owned by an address on Shape network.
-
-**Parameters:**
-
-- `address` - Wallet address to query
-- `pageSize` - Number of NFTs to return (max 100)
-- `withMetadata` - Include NFT metadata
 
 ## 📋 Prerequisites
 
@@ -74,15 +39,15 @@ Create a `.env` file in the project root:
 # Required
 ALCHEMY_API_KEY=your_alchemy_api_key_here
 
-# Optional - Network Configuration
-CHAIN_ID=360  # Shape mainnet (default) or 360-1 for Sepolia testnet
+# Network Configuration
+CHAIN_ID=360  # Shape Mainnet
+or
+CHAIN_ID=11011  # Shape Sepolia Testnet
 ```
 
 ### 2. Install Dependencies
 
 ```bash
-npm install
-# or
 yarn install
 ```
 
