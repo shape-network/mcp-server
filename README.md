@@ -164,8 +164,7 @@ src/
 │   ├── get-top-shape-creators.ts
 │   ├── get-shape-gasback-stats.ts
 │   ├── get-collection-analytics.ts
-│   ├── get-shape-nft.ts
-│   └── greet.ts             # Example tool
+│   └── get-shape-nft.ts
 ├── abi/                     # Contract ABIs
 │   └── gasback.ts          # Shape gasback contract ABI
 ├── addresses.ts             # Contract addresses
