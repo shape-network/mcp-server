@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { Alchemy, Network, OwnedNftsResponse } from 'alchemy-sdk';
-import { config } from '../config';
+import { OwnedNftsResponse } from 'alchemy-sdk';
+import { alchemy } from '../clients';
 
 export const schema = {
   address: z.string().describe('The wallet address to get NFTs for'),
@@ -35,11 +35,6 @@ export default async function getShapeNft({
   withMetadata = true,
 }: InferSchema<typeof schema>) {
   try {
-    const alchemy = new Alchemy({
-      apiKey: config.alchemyApiKey,
-      network: config.isMainnet ? Network.SHAPE_MAINNET : Network.SHAPE_SEPOLIA,
-    });
-
     const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(
       address,
       {
@@ -62,9 +57,20 @@ export default async function getShapeNft({
       content: [
         {
           type: 'text',
-          text: `Error: ${
-            error instanceof Error ? error.message : 'Unknown error occurred'
-          }`,
+          text: JSON.stringify(
+            {
+              error: true,
+              message: `Error fetching NFTs: ${
+                error instanceof Error
+                  ? error.message
+                  : 'Unknown error occurred'
+              }`,
+              address,
+              timestamp: new Date().toISOString(),
+            },
+            null,
+            2
+          ),
         },
       ],
     };

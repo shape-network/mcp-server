@@ -13,7 +13,15 @@ Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.de
 
 ### `getShapeCreatorAnalytics`
 
-Analyze Shape's unique creator economy including gasback earnings and contract performance.
+Get comprehensive gasback analytics for a specific creator address including total earnings, token count, and registered contracts.
+
+### `getTopShapeCreators`
+
+List the top creators on Shape by gasback earnings with comprehensive stats including token counts and contract details.
+
+### `getShapeGasbackStats`
+
+Get comprehensive Shape gasback ecosystem statistics including total earnings, token distribution, and network insights.
 
 ### `getCollectionAnalytics`
 
@@ -97,19 +105,25 @@ Add to your config file:
 ### Analyze Creator Gasback Earnings
 
 ```
-Analyze gasback earnings for contract 0x1234... owned by creator 0xabcd...
+Get gasback analytics for creator address 0xabcd...
+```
+
+### Top Creators by Gasback
+
+```
+Show me the top 25 creators on Shape by gasback earnings
+```
+
+### Shape Ecosystem Overview
+
+```
+Get comprehensive Shape gasback ecosystem statistics
 ```
 
 ### Get NFT Collection Floor Prices
 
 ```
 Get floor price and sales analytics for NFT collection 0x5678...
-```
-
-### Track Creator Performance
-
-```
-Show me the top performing creators on Shape by gasback earnings this week
 ```
 
 ## 🏗 Building for Production
@@ -147,9 +161,15 @@ vercel deploy --prod --prebuilt
 src/
 ├── tools/                    # MCP tools directory
 │   ├── get-shape-creator-analytics.ts
+│   ├── get-top-shape-creators.ts
+│   ├── get-shape-gasback-stats.ts
 │   ├── get-collection-analytics.ts
 │   ├── get-shape-nft.ts
 │   └── greet.ts             # Example tool
+├── abi/                     # Contract ABIs
+│   └── gasback.ts          # Shape gasback contract ABI
+├── addresses.ts             # Contract addresses
+├── clients.ts               # Blockchain clients
 ├── config.ts                # Configuration management
 ├── middleware.ts            # Request middleware
 └── xmcp.config.ts          # XMCP configuration

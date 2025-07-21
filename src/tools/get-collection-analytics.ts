@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { Alchemy, Network, NftSaleMarketplace } from 'alchemy-sdk';
-import { config } from '../config';
+import { alchemy } from '../clients';
 
 export const schema = {
   contractAddress: z
@@ -50,11 +50,6 @@ export default async function getCollectionAnalytics({
   marketplace,
 }: InferSchema<typeof schema>) {
   try {
-    const alchemy = new Alchemy({
-      apiKey: config.alchemyApiKey,
-      network: config.isMainnet ? Network.SHAPE_MAINNET : Network.SHAPE_SEPOLIA,
-    });
-
     const analytics: any = {
       contractAddress,
       timestamp: new Date().toISOString(),
@@ -199,9 +194,20 @@ export default async function getCollectionAnalytics({
       content: [
         {
           type: 'text',
-          text: `Error fetching collection analytics: ${
-            error instanceof Error ? error.message : 'Unknown error occurred'
-          }`,
+          text: JSON.stringify(
+            {
+              error: true,
+              message: `Error fetching collection analytics: ${
+                error instanceof Error
+                  ? error.message
+                  : 'Unknown error occurred'
+              }`,
+              contractAddress,
+              timestamp: new Date().toISOString(),
+            },
+            null,
+            2
+          ),
         },
       ],
     };
