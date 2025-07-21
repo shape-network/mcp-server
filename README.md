@@ -19,10 +19,6 @@ Get comprehensive gasback analytics for a specific creator address including tot
 
 List the top creators on Shape by gasback earnings with comprehensive stats including token counts and contract details.
 
-### `getShapeGasbackStats`
-
-Get comprehensive Shape gasback ecosystem statistics including total earnings, token distribution, and network insights.
-
 ### `getCollectionAnalytics`
 
 Comprehensive NFT collection data including floor prices and sales analytics.
@@ -162,7 +158,6 @@ src/
 ├── tools/                    # MCP tools directory
 │   ├── get-shape-creator-analytics.ts
 │   ├── get-top-shape-creators.ts
-│   ├── get-shape-gasback-stats.ts
 │   ├── get-collection-analytics.ts
 │   └── get-shape-nft.ts
 ├── abi/                     # Contract ABIs
