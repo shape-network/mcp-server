@@ -12,7 +12,7 @@ export const schema = {
 export const metadata = {
   name: 'getCollectionAnalytics',
   description:
-    'Get onchain NFT collection analytics: name, symbol, total supply, owner count, token standard, and sample NFTs. Perfect for AI agents analyzing NFT ecosystems.',
+    'Get comprehensive NFT collection analytics: name, symbol, total supply, owner count, token standard, sample NFTs, and marketplace floor prices from OpenSea and LooksRare. Perfect for AI agents analyzing NFT ecosystems.',
   annotations: {
     title: 'NFT Collection Analytics',
     readOnlyHint: true,
@@ -38,16 +38,19 @@ export default async function getCollectionAnalytics({
       ownerCount: null,
       contractType: null,
       sampleNfts: [],
+      floorPrice: null,
     };
 
     // Parallelize API calls for better performance
-    const [collectionResult, ownersResult] = await Promise.allSettled([
-      alchemy.nft.getNftsForContract(contractAddress, {
-        pageSize: 10,
-        omitMetadata: false,
-      }),
-      alchemy.nft.getOwnersForContract(contractAddress),
-    ]);
+    const [collectionResult, ownersResult, floorPriceResult] =
+      await Promise.allSettled([
+        alchemy.nft.getNftsForContract(contractAddress, {
+          pageSize: 10,
+          omitMetadata: false,
+        }),
+        alchemy.nft.getOwnersForContract(contractAddress),
+        alchemy.nft.getFloorPrice(contractAddress),
+      ]);
 
     // Process collection info
     if (
@@ -75,6 +78,32 @@ export default async function getCollectionAnalytics({
     // Process owner count
     if (ownersResult.status === 'fulfilled') {
       analytics.ownerCount = ownersResult.value.owners.length;
+    }
+
+    // Process floor price data
+    if (floorPriceResult.status === 'fulfilled') {
+      const floorPriceData = floorPriceResult.value;
+
+      analytics.floorPrice = {
+        openSea:
+          floorPriceData.openSea && !('error' in floorPriceData.openSea)
+            ? {
+                floorPrice: floorPriceData.openSea.floorPrice || null,
+                priceCurrency: floorPriceData.openSea.priceCurrency || null,
+                collectionUrl: floorPriceData.openSea.collectionUrl || null,
+                retrievedAt: floorPriceData.openSea.retrievedAt || null,
+              }
+            : null,
+        looksRare:
+          floorPriceData.looksRare && !('error' in floorPriceData.looksRare)
+            ? {
+                floorPrice: floorPriceData.looksRare.floorPrice || null,
+                priceCurrency: floorPriceData.looksRare.priceCurrency || null,
+                collectionUrl: floorPriceData.looksRare.collectionUrl || null,
+                retrievedAt: floorPriceData.looksRare.retrievedAt || null,
+              }
+            : null,
+      };
     }
 
     return {
