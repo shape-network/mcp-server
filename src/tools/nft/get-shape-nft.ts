@@ -17,22 +17,21 @@ export const metadata = {
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
+    requiresWallet: false,
+    category: 'nft-analysis',
+    educationalHint: true,
+    chainableWith: ['getCollectionAnalytics'],
   },
 };
 
-export default async function getShapeNft({
-  address,
-}: InferSchema<typeof schema>) {
+export default async function getShapeNft({ address }: InferSchema<typeof schema>) {
   try {
-    const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(
-      address,
-      {
-        pageSize: 25,
-        omitMetadata: false,
-        orderBy: NftOrdering.TRANSFERTIME,
-        excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS],
-      }
-    );
+    const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(address, {
+      pageSize: 25,
+      omitMetadata: false,
+      orderBy: NftOrdering.TRANSFERTIME,
+      excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS],
+    });
 
     const result: ShapeNftOutput = {
       ownerAddress: address,

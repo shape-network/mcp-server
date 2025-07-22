@@ -20,9 +20,7 @@ export const metadata = {
   },
 };
 
-export default async function getTopShapeCreators({}: InferSchema<
-  typeof schema
->) {
+export default async function getTopShapeCreators({}: InferSchema<typeof schema>) {
   try {
     const gasbackContract = getContract({
       address: addresses.gasback[config.chainId],
@@ -72,9 +70,7 @@ export default async function getTopShapeCreators({}: InferSchema<
         });
         ownerResults.push(...batchResults);
       } catch (error) {
-        ownerResults.push(
-          ...new Array(batch.length).fill({ status: 'failure' })
-        );
+        ownerResults.push(...new Array(batch.length).fill({ status: 'failure' }));
       }
     }
 
@@ -130,9 +126,7 @@ export default async function getTopShapeCreators({}: InferSchema<
         });
         analyticsResults.push(...batchResults);
       } catch (error) {
-        analyticsResults.push(
-          ...new Array(batch.length).fill({ status: 'failure' })
-        );
+        analyticsResults.push(...new Array(batch.length).fill({ status: 'failure' }));
       }
     }
 
@@ -175,9 +169,7 @@ export default async function getTopShapeCreators({}: InferSchema<
         stats.totalTokens += 1;
         stats.totalEarnedWei += totalGasbackResult.result as bigint;
         stats.currentBalanceWei += currentBalanceResult.result as bigint;
-        stats.registeredContracts += (
-          registeredContractsResult.result as string[]
-        ).length;
+        stats.registeredContracts += (registeredContractsResult.result as string[]).length;
       }
     }
 
@@ -185,12 +177,8 @@ export default async function getTopShapeCreators({}: InferSchema<
       .map((stats) => ({
         address: stats.address,
         totalTokens: stats.totalTokens,
-        totalEarnedETH: parseFloat(
-          (Number(stats.totalEarnedWei) / 1e18).toFixed(6)
-        ),
-        currentBalanceETH: parseFloat(
-          (Number(stats.currentBalanceWei) / 1e18).toFixed(6)
-        ),
+        totalEarnedETH: parseFloat((Number(stats.totalEarnedWei) / 1e18).toFixed(6)),
+        currentBalanceETH: parseFloat((Number(stats.currentBalanceWei) / 1e18).toFixed(6)),
         registeredContracts: stats.registeredContracts,
       }))
       .sort((a, b) => b.totalEarnedETH - a.totalEarnedETH)

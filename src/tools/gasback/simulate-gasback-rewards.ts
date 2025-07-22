@@ -4,17 +4,9 @@ import { rpcClient } from '../../clients';
 import type { GasbackSimulationOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  contractAddress: z
-    .string()
-    .describe('The contract address to simulate Gasback for'),
-  hypotheticalTxs: z
-    .number()
-    .default(100)
-    .describe('Number of hypothetical user transactions'),
-  avgGasPerTx: z
-    .number()
-    .default(100000)
-    .describe('Average gas used per transaction'),
+  contractAddress: z.string().describe('The contract address to simulate Gasback for'),
+  hypotheticalTxs: z.number().default(100).describe('Number of hypothetical user transactions'),
+  avgGasPerTx: z.number().default(100000).describe('Average gas used per transaction'),
 };
 
 export const metadata = {
@@ -39,8 +31,7 @@ export default async function simulateGasbackEarnings({
     const rpc = rpcClient();
     const currentGasPrice = await rpc.getGasPrice();
 
-    const totalGasSpent =
-      BigInt(hypotheticalTxs) * BigInt(avgGasPerTx) * currentGasPrice;
+    const totalGasSpent = BigInt(hypotheticalTxs) * BigInt(avgGasPerTx) * currentGasPrice;
     const rebateRate = 0.8;
     const estimatedEarningsWei =
       (totalGasSpent * BigInt(Math.floor(rebateRate * 1e18))) / BigInt(1e18);

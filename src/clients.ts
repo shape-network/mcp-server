@@ -5,8 +5,7 @@ import { config } from './config';
 
 export const alchemy = new Alchemy({
   apiKey: config.alchemyApiKey,
-  network:
-    config.chainId === shape.id ? Network.SHAPE_MAINNET : Network.SHAPE_SEPOLIA,
+  network: config.chainId === shape.id ? Network.SHAPE_MAINNET : Network.SHAPE_SEPOLIA,
 });
 
 export function rpcClient() {
@@ -16,9 +15,7 @@ export function rpcClient() {
 
   return createPublicClient({
     chain,
-    transport: http(
-      `https://${rootUrl}.g.alchemy.com/v2/${config.alchemyApiKey}`
-    ),
+    transport: http(`https://${rootUrl}.g.alchemy.com/v2/${config.alchemyApiKey}`),
     batch: {
       multicall: true,
     },

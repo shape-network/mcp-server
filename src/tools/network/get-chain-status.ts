@@ -63,12 +63,10 @@ export default async function getChainStatus({}: InferSchema<typeof schema>) {
             const timeDiffs = [];
             for (let i = 0; i < validBlocks.length - 1; i++) {
               timeDiffs.push(
-                Number(validBlocks[i]!.timestamp) -
-                  Number(validBlocks[i + 1]!.timestamp)
+                Number(validBlocks[i]!.timestamp) - Number(validBlocks[i + 1]!.timestamp)
               );
             }
-            result.avgBlockTime =
-              timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
+            result.avgBlockTime = timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
           }
         } catch (error) {}
       }

@@ -8,9 +8,7 @@ import { config } from '../../config';
 import type { StackAchievementsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  userAddress: z
-    .string()
-    .describe('The user address to fetch Stack achievements for'),
+  userAddress: z.string().describe('The user address to fetch Stack achievements for'),
 };
 
 export const metadata = {
@@ -28,9 +26,7 @@ export const metadata = {
   },
 };
 
-export default async function getStackAchievements({
-  userAddress,
-}: InferSchema<typeof schema>) {
+export default async function getStackAchievements({ userAddress }: InferSchema<typeof schema>) {
   try {
     const stackContract = getContract({
       address: addresses.stack[config.chainId],
@@ -67,9 +63,7 @@ export default async function getStackAchievements({
       };
     }
 
-    const medals = (await stackContract.read.getStackMedals([
-      stackId,
-    ])) as Array<{
+    const medals = (await stackContract.read.getStackMedals([stackId])) as Array<{
       stackOwner: string;
       stackId: bigint;
       medalUID: string;

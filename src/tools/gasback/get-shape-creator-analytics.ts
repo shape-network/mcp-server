@@ -8,9 +8,7 @@ import { config } from '../../config';
 import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  creatorAddress: z
-    .string()
-    .describe('The creator/owner address to analyze gasback data for'),
+  creatorAddress: z.string().describe('The creator/owner address to analyze gasback data for'),
 };
 
 export const metadata = {
@@ -70,30 +68,19 @@ export default async function getShapeCreatorAnalytics({
     let totalRegisteredContracts = 0;
 
     for (const tokenId of ownedTokens) {
-      const [totalGasback, currentBalance, registeredContracts] =
-        await Promise.all([
-          gasbackContract.read.getTokenTotalGasback([
-            tokenId,
-          ]) as Promise<bigint>,
-          gasbackContract.read.getTokenGasbackBalance([
-            tokenId,
-          ]) as Promise<bigint>,
-          gasbackContract.read.getTokenRegisteredContracts([
-            tokenId,
-          ]) as Promise<string[]>,
-        ]);
+      const [totalGasback, currentBalance, registeredContracts] = await Promise.all([
+        gasbackContract.read.getTokenTotalGasback([tokenId]) as Promise<bigint>,
+        gasbackContract.read.getTokenGasbackBalance([tokenId]) as Promise<bigint>,
+        gasbackContract.read.getTokenRegisteredContracts([tokenId]) as Promise<string[]>,
+      ]);
 
       totalGasbackEarned += Number(totalGasback);
       totalCurrentBalance += Number(currentBalance);
       totalRegisteredContracts += registeredContracts.length;
     }
 
-    analytics.totalEarnedETH = parseFloat(
-      (totalGasbackEarned / 1e18).toFixed(6)
-    );
-    analytics.currentBalanceETH = parseFloat(
-      (totalCurrentBalance / 1e18).toFixed(6)
-    );
+    analytics.totalEarnedETH = parseFloat((totalGasbackEarned / 1e18).toFixed(6));
+    analytics.currentBalanceETH = parseFloat((totalCurrentBalance / 1e18).toFixed(6));
     analytics.totalWithdrawnETH = parseFloat(
       ((totalGasbackEarned - totalCurrentBalance) / 1e18).toFixed(6)
     );

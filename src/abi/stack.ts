@@ -751,18 +751,14 @@ export const abi = [
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'bytes32[]', name: 'medalUIDs', type: 'bytes32[]' },
-    ],
+    inputs: [{ internalType: 'bytes32[]', name: 'medalUIDs', type: 'bytes32[]' }],
     name: 'removeClusteredMedals',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'bytes32[]', name: 'medalUIDs', type: 'bytes32[]' },
-    ],
+    inputs: [{ internalType: 'bytes32[]', name: 'medalUIDs', type: 'bytes32[]' }],
     name: 'removeMedals',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -858,9 +854,7 @@ export const abi = [
   {
     inputs: [],
     name: 'stackRenderer',
-    outputs: [
-      { internalType: 'contract IStackRenderer', name: '', type: 'address' },
-    ],
+    outputs: [{ internalType: 'contract IStackRenderer', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },

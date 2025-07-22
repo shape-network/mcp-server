@@ -4,9 +4,7 @@ import { alchemy } from '../../clients';
 import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  contractAddress: z
-    .string()
-    .describe('The NFT collection contract address to analyze'),
+  contractAddress: z.string().describe('The NFT collection contract address to analyze'),
 };
 
 export const metadata = {
@@ -41,20 +39,16 @@ export default async function getCollectionAnalytics({
       floorPrice: null,
     };
 
-    const [collectionResult, ownersResult, floorPriceResult] =
-      await Promise.allSettled([
-        alchemy.nft.getNftsForContract(contractAddress, {
-          pageSize: 10,
-          omitMetadata: false,
-        }),
-        alchemy.nft.getOwnersForContract(contractAddress),
-        alchemy.nft.getFloorPrice(contractAddress),
-      ]);
+    const [collectionResult, ownersResult, floorPriceResult] = await Promise.allSettled([
+      alchemy.nft.getNftsForContract(contractAddress, {
+        pageSize: 10,
+        omitMetadata: false,
+      }),
+      alchemy.nft.getOwnersForContract(contractAddress),
+      alchemy.nft.getFloorPrice(contractAddress),
+    ]);
 
-    if (
-      collectionResult.status === 'fulfilled' &&
-      collectionResult.value.nfts.length > 0
-    ) {
+    if (collectionResult.status === 'fulfilled' && collectionResult.value.nfts.length > 0) {
       const sampleNft = collectionResult.value.nfts[0];
       analytics.name = sampleNft.contract.name || null;
       analytics.symbol = sampleNft.contract.symbol || null;
@@ -63,13 +57,11 @@ export default async function getCollectionAnalytics({
         : null;
       analytics.contractType = sampleNft.contract.tokenType || null;
 
-      analytics.sampleNfts = collectionResult.value.nfts
-        .slice(0, 5)
-        .map((nft) => ({
-          tokenId: nft.tokenId,
-          name: nft.name || null,
-          imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
-        }));
+      analytics.sampleNfts = collectionResult.value.nfts.slice(0, 5).map((nft) => ({
+        tokenId: nft.tokenId,
+        name: nft.name || null,
+        imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
+      }));
     }
 
     if (ownersResult.status === 'fulfilled') {
