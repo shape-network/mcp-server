@@ -8,7 +8,9 @@
   "scripts": {
     "build": "xmcp build",
     "dev": "xmcp dev",
-    "start": "node dist/http.js"
+    "start": "node dist/http.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "alchemy-sdk": "^3.6.1",
@@ -17,6 +19,7 @@
     "zod": "3.24.4"
   },
   "devDependencies": {
+    "prettier": "^3.6.2",
     "swc-loader": "^0.2.6"
   }
 }
