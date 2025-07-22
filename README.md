@@ -1,6 +1,6 @@
 # Shape MCP Server
 
-Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's [gasback distribution](https://docs.shape.network/gasback), NFT analytics, and blockchain data.
+Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's [gasback distribution](https://docs.shape.network/gasback), NFT analytics, and blockchain data. It's extensible & composable.
 
 ## 🚀 Features
 
@@ -31,7 +31,7 @@ Get NFTs owned by an address on Shape network.
 
 - Node.js 20+
 - An [Alchemy API key](https://dashboard.alchemy.com/)
-- MCP-compatible client (Cursor IDE or Claude Desktop)
+- MCP-compatible client (Cursor IDE, Claude Desktop or AI agent interface)
 
 ## 🔧 Setup
 
@@ -58,33 +58,16 @@ yarn install
 ### 3. Development Server
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 This starts the MCP server on `http://localhost:3002/mcp`
 
 ## 🔌 Client Integration
 
-### Cursor IDE Setup
+### Example IDE Setup
 
-Add to your MCP settings (`~/.cursor/mcp.json`):
-
-```json
-{
-  "mcpServers": {
-    "shape-mcp": {
-      "url": "http://localhost:3002/mcp"
-    }
-  }
-}
-```
-
-### Claude Desktop Setup
-
-Add to your config file:
-
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+Add to your MCP settings:
 
 ```json
 {
@@ -107,13 +90,7 @@ Get gasback analytics for creator address 0xabcd...
 ### Top Creators by Gasback
 
 ```
-Show me the top 25 creators on Shape by gasback earnings
-```
-
-### Shape Ecosystem Overview
-
-```
-Get comprehensive Shape gasback ecosystem statistics
+Show me the top creators on Shape by gasback earnings
 ```
 
 ### Get NFT Collection Analytics
@@ -125,30 +102,7 @@ Analyze NFT collection for contract address 0x5678...
 ## 🏗 Building for Production
 
 ```bash
-npm run build
-```
-
-### Deployment Options
-
-**HTTP Server:**
-
-```bash
-npm run start
-# or
-node dist/http.js
-```
-
-**STDIO (Local):**
-
-```bash
-node dist/stdio.js
-```
-
-**Vercel Deployment:**
-
-```bash
-npm run build
-vercel deploy --prod --prebuilt
+yarn build
 ```
 
 ## 📁 Project Structure
@@ -205,15 +159,18 @@ export default async function myTool({ address }: InferSchema<typeof schema>) {
 
 ## 🌐 Resources
 
-- [Shape Network Documentation](https://docs.shape.network/)
-- [Alchemy API Documentation](https://docs.alchemy.com/)
+- [Shape Docs](https://docs.shape.network/)
+- [Shape Gasback](https://docs.shape.network/gasback)
 - [XMCP Framework](https://xmcp.dev/docs)
-- [Shape Gasback System](https://gasback.shape.network/)
+- [Alchemy API Documentation](https://docs.alchemy.com/)
+
+## ❓ Questions or Support
+
+- Ping or DM [@williamhzo](https://x.com/williamhzo) on Twitter/X
+- [Shape Discord](https://discord.com/invite/shape-l2)
+
+---
 
 ## 📄 License
 
 MIT License - see LICENSE file for details.
-
----
-
-**Built for the Shape creator economy** 🫡
