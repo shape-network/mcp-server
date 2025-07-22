@@ -1,11 +1,11 @@
 import { getContract } from 'viem';
 import { type InferSchema } from 'xmcp';
 import { z } from 'zod';
-import { abi as gasbackAbi } from '../abi/gasback';
-import { addresses } from '../addresses';
-import { rpcClient } from '../clients';
-import { config } from '../config';
-import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../types';
+import { abi as gasbackAbi } from '../../abi/gasback';
+import { addresses } from '../../addresses';
+import { rpcClient } from '../../clients';
+import { config } from '../../config';
+import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
   creatorAddress: z
@@ -16,12 +16,16 @@ export const schema = {
 export const metadata = {
   name: 'getShapeCreatorAnalytics',
   description:
-    'Get essential gasback analytics for a Shape creator: token count, earnings, balance, withdrawals, and registered contracts',
+    'Get essential gasback analytics for a Shape creator: token count, earnings, balance, withdrawals, and registered contracts. Ideal for AI agents tracking creator performance.',
   annotations: {
     title: 'Shape Creator Gasback Analytics',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
+    requiresWallet: false,
+    category: 'gasback-analysis',
+    educationalHint: true,
+    chainableWith: ['getTopShapeCreators', 'simulateGasbackRewards'],
   },
 };
 

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { OwnedNftsResponse } from 'alchemy-sdk';
-import { alchemy } from '../clients';
-import type { ShapeNftOutput, ToolErrorOutput } from '../types';
+import { alchemy } from '../../clients';
+import type { ShapeNftOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
   address: z.string().describe('The wallet address to get NFTs for'),

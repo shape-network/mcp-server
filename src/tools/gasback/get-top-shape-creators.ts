@@ -1,10 +1,10 @@
 import { getContract } from 'viem';
 import { type InferSchema } from 'xmcp';
-import { abi as gasbackAbi } from '../abi/gasback';
-import { addresses } from '../addresses';
-import { rpcClient } from '../clients';
-import { config } from '../config';
-import type { TopShapeCreatorsOutput, ToolErrorOutput } from '../types';
+import { abi as gasbackAbi } from '../../abi/gasback';
+import { addresses } from '../../addresses';
+import { rpcClient } from '../../clients';
+import { config } from '../../config';
+import type { TopShapeCreatorsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {};
 

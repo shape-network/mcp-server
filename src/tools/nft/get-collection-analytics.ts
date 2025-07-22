@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { alchemy } from '../clients';
-import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../types';
+import { alchemy } from '../../clients';
+import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
   contractAddress: z
@@ -12,12 +12,16 @@ export const schema = {
 export const metadata = {
   name: 'getCollectionAnalytics',
   description:
-    'Get onchain NFT collection analytics: name, symbol, total supply, owner count, token standard, and sample NFTs',
+    'Get onchain NFT collection analytics: name, symbol, total supply, owner count, token standard, and sample NFTs. Perfect for AI agents analyzing NFT ecosystems.',
   annotations: {
     title: 'NFT Collection Analytics',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
+    requiresWallet: false,
+    category: 'nft-analysis',
+    educationalHint: true,
+    chainableWith: ['getShapeNft', 'simulateGasbackRewards'],
   },
 };
 
