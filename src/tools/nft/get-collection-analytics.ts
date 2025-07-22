@@ -41,7 +41,6 @@ export default async function getCollectionAnalytics({
       floorPrice: null,
     };
 
-    // Parallelize API calls for better performance
     const [collectionResult, ownersResult, floorPriceResult] =
       await Promise.allSettled([
         alchemy.nft.getNftsForContract(contractAddress, {
@@ -52,7 +51,6 @@ export default async function getCollectionAnalytics({
         alchemy.nft.getFloorPrice(contractAddress),
       ]);
 
-    // Process collection info
     if (
       collectionResult.status === 'fulfilled' &&
       collectionResult.value.nfts.length > 0
@@ -65,7 +63,6 @@ export default async function getCollectionAnalytics({
         : null;
       analytics.contractType = sampleNft.contract.tokenType || null;
 
-      // Get sample NFTs (up to 5)
       analytics.sampleNfts = collectionResult.value.nfts
         .slice(0, 5)
         .map((nft) => ({
@@ -75,12 +72,10 @@ export default async function getCollectionAnalytics({
         }));
     }
 
-    // Process owner count
     if (ownersResult.status === 'fulfilled') {
       analytics.ownerCount = ownersResult.value.owners.length;
     }
 
-    // Process floor price data
     if (floorPriceResult.status === 'fulfilled') {
       analytics.floorPrice = floorPriceResult.value;
     }

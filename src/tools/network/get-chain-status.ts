@@ -35,7 +35,6 @@ export default async function getChainStatus({}: InferSchema<typeof schema>) {
       avgBlockTime: null,
     };
 
-    // Test RPC health and get basic info
     try {
       const [latestBlock, gasPrice, blockNumber] = await Promise.allSettled([
         client.getBlock({ blockTag: 'latest' }),
@@ -45,10 +44,9 @@ export default async function getChainStatus({}: InferSchema<typeof schema>) {
 
       result.rpcHealthy = latestBlock.status === 'fulfilled';
 
-      // Process latest block
       if (latestBlock.status === 'fulfilled') {
         const block = latestBlock.value;
-        // Calculate average block time by sampling recent blocks
+
         try {
           const recentBlocks = await Promise.allSettled([
             client.getBlock({ blockNumber: block.number - BigInt(1) }),
@@ -72,12 +70,9 @@ export default async function getChainStatus({}: InferSchema<typeof schema>) {
             result.avgBlockTime =
               timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
           }
-        } catch (error) {
-          // Average block time calculation failed, continue without it
-        }
+        } catch (error) {}
       }
 
-      // Process gas price
       if (gasPrice.status === 'fulfilled') {
         const gasPriceWei = gasPrice.value;
         const gasPriceGwei = Number(gasPriceWei) / 1e9;

@@ -38,13 +38,11 @@ export default async function getStackAchievements({
       client: rpcClient(),
     });
 
-    // Get the stack ID for this user address
     const stackId = (await stackContract.read.addressToTokenId([
       userAddress as `0x${string}`,
     ])) as bigint;
 
     if (stackId === BigInt(0)) {
-      // User doesn't have a Stack NFT
       const result: StackAchievementsOutput = {
         userAddress,
         timestamp: new Date().toISOString(),
@@ -69,7 +67,6 @@ export default async function getStackAchievements({
       };
     }
 
-    // Get all medals for this stack
     const medals = (await stackContract.read.getStackMedals([
       stackId,
     ])) as Array<{
@@ -81,7 +78,6 @@ export default async function getStackAchievements({
       timestamp: bigint;
     }>;
 
-    // Count medals by tier (assuming tiers: 1=bronze, 2=silver, 3=gold, 4+=special)
     const medalsByTier = {
       bronze: 0,
       silver: 0,
@@ -96,7 +92,6 @@ export default async function getStackAchievements({
       const tier = medal.medalTier;
       const timestamp = Number(medal.timestamp);
 
-      // Count by tier
       if (tier === 1) {
         medalsByTier.bronze++;
       } else if (tier === 2) {
@@ -107,7 +102,6 @@ export default async function getStackAchievements({
         medalsByTier.special++;
       }
 
-      // Track most recent medal
       if (timestamp > lastMedalTimestamp) {
         lastMedalTimestamp = timestamp;
         lastMedalUID = medal.medalUID;

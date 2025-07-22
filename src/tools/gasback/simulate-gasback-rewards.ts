@@ -26,7 +26,7 @@ export const metadata = {
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
-    simulation: true, // Custom hint for agents
+    simulation: true,
   },
 };
 
@@ -37,11 +37,11 @@ export default async function simulateGasbackEarnings({
 }: InferSchema<typeof schema>) {
   try {
     const rpc = rpcClient();
-    const currentGasPrice = await rpc.getGasPrice(); // In wei
+    const currentGasPrice = await rpc.getGasPrice();
 
     const totalGasSpent =
       BigInt(hypotheticalTxs) * BigInt(avgGasPerTx) * currentGasPrice;
-    const rebateRate = 0.8; // Shape's 80%
+    const rebateRate = 0.8;
     const estimatedEarningsWei =
       (totalGasSpent * BigInt(Math.floor(rebateRate * 1e18))) / BigInt(1e18);
     const estimatedEarningsETH = Number(estimatedEarningsWei) / 1e18;

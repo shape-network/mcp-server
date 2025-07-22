@@ -50,7 +50,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       };
     }
 
-    // Batch multicall for efficiency - get all token owners first
     const ownerCalls: any[] = [];
     for (let tokenId = 1; tokenId <= totalTokens; tokenId++) {
       ownerCalls.push({
@@ -61,7 +60,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       });
     }
 
-    // Execute owner calls in batches to avoid RPC limits
     const batchSize = 100;
     const ownerResults: any[] = [];
 
@@ -74,14 +72,12 @@ export default async function getTopShapeCreators({}: InferSchema<
         });
         ownerResults.push(...batchResults);
       } catch (error) {
-        // If batch fails, add null results for this batch
         ownerResults.push(
           ...new Array(batch.length).fill({ status: 'failure' })
         );
       }
     }
 
-    // Build token owner map
     const tokenOwners = new Map<number, string>();
     ownerResults.forEach((result, index) => {
       if (result.status === 'success' && result.result) {
@@ -100,7 +96,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       };
     }
 
-    // Batch calls for token analytics
     const analyticsCalls: any[] = [];
     for (const tokenId of tokenOwners.keys()) {
       analyticsCalls.push(
@@ -125,7 +120,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       );
     }
 
-    // Execute analytics calls in batches
     const analyticsResults: any[] = [];
     for (let i = 0; i < analyticsCalls.length; i += batchSize) {
       const batch = analyticsCalls.slice(i, i + batchSize);
@@ -142,7 +136,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       }
     }
 
-    // Map to aggregate creator stats
     const creatorStats = new Map<
       string,
       {
@@ -154,7 +147,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       }
     >();
 
-    // Process results
     let resultIndex = 0;
     for (const tokenId of tokenOwners.keys()) {
       const owner = tokenOwners.get(tokenId)!;
@@ -189,7 +181,6 @@ export default async function getTopShapeCreators({}: InferSchema<
       }
     }
 
-    // Convert to final format and sort, limit to top 25
     const topCreators = Array.from(creatorStats.values())
       .map((stats) => ({
         address: stats.address,

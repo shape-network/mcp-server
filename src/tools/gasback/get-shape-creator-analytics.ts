@@ -39,7 +39,6 @@ export default async function getShapeCreatorAnalytics({
       client: rpcClient(),
     });
 
-    // Get all tokens owned by this creator
     const ownedTokens = (await gasbackContract.read.getOwnedTokens([
       creatorAddress as `0x${string}`,
     ])) as bigint[];
@@ -66,7 +65,6 @@ export default async function getShapeCreatorAnalytics({
       };
     }
 
-    // Calculate aggregate metrics
     let totalGasbackEarned = 0;
     let totalCurrentBalance = 0;
     let totalRegisteredContracts = 0;
