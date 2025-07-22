@@ -82,28 +82,7 @@ export default async function getCollectionAnalytics({
 
     // Process floor price data
     if (floorPriceResult.status === 'fulfilled') {
-      const floorPriceData = floorPriceResult.value;
-
-      analytics.floorPrice = {
-        openSea:
-          floorPriceData.openSea && !('error' in floorPriceData.openSea)
-            ? {
-                floorPrice: floorPriceData.openSea.floorPrice || null,
-                priceCurrency: floorPriceData.openSea.priceCurrency || null,
-                collectionUrl: floorPriceData.openSea.collectionUrl || null,
-                retrievedAt: floorPriceData.openSea.retrievedAt || null,
-              }
-            : null,
-        looksRare:
-          floorPriceData.looksRare && !('error' in floorPriceData.looksRare)
-            ? {
-                floorPrice: floorPriceData.looksRare.floorPrice || null,
-                priceCurrency: floorPriceData.looksRare.priceCurrency || null,
-                collectionUrl: floorPriceData.looksRare.collectionUrl || null,
-                retrievedAt: floorPriceData.looksRare.retrievedAt || null,
-              }
-            : null,
-      };
+      analytics.floorPrice = floorPriceResult.value;
     }
 
     return {

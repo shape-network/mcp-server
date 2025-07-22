@@ -28,7 +28,7 @@ Analyze Gasback contract events with detailed decoding and educational descripti
 
 #### `getCollectionAnalytics`
 
-Get comprehensive NFT collection analytics including name, symbol, total supply, owner count, token standard, and sample NFTs. Optimized with parallel API calls for better performance.
+Get comprehensive NFT collection analytics including name, symbol, total supply, owner count, token standard, sample NFTs, and **marketplace floor prices from OpenSea**. Optimized with parallel API calls for better performance.
 
 #### `getShapeNft`
 
@@ -42,11 +42,17 @@ Deep dive into creator Gasback performance with earnings, token count, balance, 
 
 #### `getTopShapeCreators`
 
-Discover the top 25 creators by Gasback earnings with comprehensive stats. Now uses efficient multicall batching for 100x performance improvement.
+Discover the **top 25 creators** by Gasback earnings with comprehensive stats. Uses efficient multicall batching for 100x performance improvement. Limit is fixed at 25 for optimal performance.
 
 #### `simulateGasbackRewards`
 
 Educational simulation tool for modeling potential Gasback rewards based on contract usage patterns. Includes daily breakdowns, assumptions, and disclaimers.
+
+### 🏗️ Stack Tools (`/tools/stack/`)
+
+#### `getStackAchievements`
+
+Get Stack achievement analytics for users including medal counts by tier (bronze, silver, gold, special), total achievements, and last medal claimed. Tracks dynamic NFT achievements for Shape contributions.
 
 ## 📋 Prerequisites
 

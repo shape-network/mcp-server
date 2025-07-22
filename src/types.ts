@@ -1,3 +1,5 @@
+import { GetFloorPriceResponse } from 'alchemy-sdk';
+
 export type CollectionAnalyticsOutput = {
   contractAddress: string;
   timestamp: string;
@@ -11,20 +13,7 @@ export type CollectionAnalyticsOutput = {
     name: string | null;
     imageUrl: string | null;
   }>;
-  floorPrice: {
-    openSea: {
-      floorPrice: number | null;
-      priceCurrency: string | null;
-      collectionUrl: string | null;
-      retrievedAt: string | null;
-    } | null;
-    looksRare: {
-      floorPrice: number | null;
-      priceCurrency: string | null;
-      collectionUrl: string | null;
-      retrievedAt: string | null;
-    } | null;
-  } | null;
+  floorPrice: GetFloorPriceResponse | null;
 };
 
 export type ShapeCreatorAnalyticsOutput = {
