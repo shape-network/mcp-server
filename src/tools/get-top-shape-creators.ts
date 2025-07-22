@@ -5,6 +5,7 @@ import { abi as gasbackAbi } from '../abi/gasback';
 import { addresses } from '../addresses';
 import { rpcClient } from '../clients';
 import { config } from '../config';
+import type { TopShapeCreatorsOutput, ToolErrorOutput } from '../types';
 
 export const schema = {
   limit: z
@@ -12,17 +13,12 @@ export const schema = {
     .optional()
     .default(50)
     .describe('Number of top creators to return (default: 50, max: 100)'),
-  includeContractDetails: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Include detailed contract information for each creator'),
 };
 
 export const metadata = {
   name: 'getTopShapeCreators',
   description:
-    'Get the top creators on Shape by gasback earnings, with comprehensive stats including token counts and contract details',
+    'Get the top creators on Shape by gasback earnings: token count, total earned, current balance, and registered contracts',
   annotations: {
     title: 'Top Shape Creators by Gasback',
     readOnlyHint: true,
@@ -31,29 +27,8 @@ export const metadata = {
   },
 };
 
-type CreatorStats = {
-  address: string;
-  totalTokens: number;
-  totalEarnedWei: string;
-  totalEarnedETH: string;
-  currentBalanceWei: string;
-  currentBalanceETH: string;
-  totalWithdrawnWei: string;
-  totalWithdrawnETH: string;
-  totalRegisteredContracts: number;
-  averagePerToken: string;
-  averagePerContract: string;
-  contractDetails?: Array<{
-    contractAddress: string;
-    tokenId: string;
-    totalEarnedWei: string;
-    totalEarnedETH: string;
-  }>;
-};
-
 export default async function getTopShapeCreators({
   limit = 50,
-  includeContractDetails = false,
 }: InferSchema<typeof schema>) {
   try {
     const gasbackContract = getContract({
@@ -62,216 +37,98 @@ export default async function getTopShapeCreators({
       client: rpcClient(),
     });
 
-    // Ensure limit is reasonable
     const finalLimit = Math.min(Math.max(1, limit), 100);
-
-    // Get total number of tokens to enumerate
     const totalSupply = (await gasbackContract.read.totalSupply()) as bigint;
     const totalTokens = Number(totalSupply);
+
+    const result: TopShapeCreatorsOutput = {
+      timestamp: new Date().toISOString(),
+      totalCreatorsAnalyzed: 0,
+      topCreators: [],
+    };
 
     if (totalTokens === 0) {
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify(
-              {
-                message: 'No gasback tokens exist yet',
-                totalTokens: 0,
-                timestamp: new Date().toISOString(),
-              },
-              null,
-              2
-            ),
+            text: JSON.stringify(result, null, 2),
           },
         ],
       };
     }
 
     // Map to aggregate creator stats
-    const creatorStats = new Map<string, CreatorStats>();
-
-    // Process tokens in batches to avoid overwhelming the RPC
-    const batchSize = 50;
-    for (let i = 0; i < totalTokens; i += batchSize) {
-      const batchEnd = Math.min(i + batchSize, totalTokens);
-      const tokenPromises = [];
-
-      for (let tokenIndex = i; tokenIndex < batchEnd; tokenIndex++) {
-        tokenPromises.push(
-          (async () => {
-            try {
-              const tokenId = (await gasbackContract.read.tokenByIndex([
-                BigInt(tokenIndex),
-              ])) as bigint;
-
-              const [owner, totalGasback, currentBalance, registeredContracts] =
-                await Promise.all([
-                  gasbackContract.read.ownerOf([tokenId]) as Promise<string>,
-                  gasbackContract.read.getTokenTotalGasback([
-                    tokenId,
-                  ]) as Promise<bigint>,
-                  gasbackContract.read.getTokenGasbackBalance([
-                    tokenId,
-                  ]) as Promise<bigint>,
-                  gasbackContract.read.getTokenRegisteredContracts([
-                    tokenId,
-                  ]) as Promise<string[]>,
-                ]);
-
-              return {
-                tokenId,
-                owner: owner.toLowerCase(),
-                totalGasback: Number(totalGasback),
-                currentBalance: Number(currentBalance),
-                registeredContracts,
-              };
-            } catch (error) {
-              // Skip tokens that might have issues
-              return null;
-            }
-          })()
-        );
+    const creatorStats = new Map<
+      string,
+      {
+        address: string;
+        totalTokens: number;
+        totalEarnedWei: bigint;
+        currentBalanceWei: bigint;
+        registeredContracts: number;
       }
+    >();
 
-      const batchResults = await Promise.all(tokenPromises);
+    // Process all tokens
+    for (let tokenId = 1; tokenId <= totalTokens; tokenId++) {
+      try {
+        const tokenOwner = (await gasbackContract.read.ownerOf([
+          BigInt(tokenId),
+        ])) as `0x${string}`;
 
-      // Process batch results
-      for (const result of batchResults) {
-        if (!result) continue;
+        const [totalGasback, currentBalance, registeredContracts] =
+          await Promise.all([
+            gasbackContract.read.getTokenTotalGasback([
+              BigInt(tokenId),
+            ]) as Promise<bigint>,
+            gasbackContract.read.getTokenGasbackBalance([
+              BigInt(tokenId),
+            ]) as Promise<bigint>,
+            gasbackContract.read.getTokenRegisteredContracts([
+              BigInt(tokenId),
+            ]) as Promise<string[]>,
+          ]);
 
-        const {
-          tokenId,
-          owner,
-          totalGasback,
-          currentBalance,
-          registeredContracts,
-        } = result;
-        const withdrawn = totalGasback - currentBalance;
-
-        if (!creatorStats.has(owner)) {
-          creatorStats.set(owner, {
-            address: owner,
+        if (!creatorStats.has(tokenOwner)) {
+          creatorStats.set(tokenOwner, {
+            address: tokenOwner,
             totalTokens: 0,
-            totalEarnedWei: '0',
-            totalEarnedETH: '0',
-            currentBalanceWei: '0',
-            currentBalanceETH: '0',
-            totalWithdrawnWei: '0',
-            totalWithdrawnETH: '0',
-            totalRegisteredContracts: 0,
-            averagePerToken: '0',
-            averagePerContract: '0',
-            ...(includeContractDetails && { contractDetails: [] }),
+            totalEarnedWei: BigInt(0),
+            currentBalanceWei: BigInt(0),
+            registeredContracts: 0,
           });
         }
 
-        const stats = creatorStats.get(owner)!;
-        const prevTotalEarned = Number(stats.totalEarnedWei);
-        const prevCurrentBalance = Number(stats.currentBalanceWei);
-        const prevWithdrawn = Number(stats.totalWithdrawnWei);
-
+        const stats = creatorStats.get(tokenOwner)!;
         stats.totalTokens += 1;
-        stats.totalEarnedWei = (prevTotalEarned + totalGasback).toString();
-        stats.totalEarnedETH = (
-          (prevTotalEarned + totalGasback) /
-          1e18
-        ).toFixed(6);
-        stats.currentBalanceWei = (
-          prevCurrentBalance + currentBalance
-        ).toString();
-        stats.currentBalanceETH = (
-          (prevCurrentBalance + currentBalance) /
-          1e18
-        ).toFixed(6);
-        stats.totalWithdrawnWei = (prevWithdrawn + withdrawn).toString();
-        stats.totalWithdrawnETH = ((prevWithdrawn + withdrawn) / 1e18).toFixed(
-          6
-        );
-        stats.totalRegisteredContracts += registeredContracts.length;
-
-        // Calculate averages
-        const newTotalEarned = prevTotalEarned + totalGasback;
-        stats.averagePerToken = (
-          newTotalEarned /
-          stats.totalTokens /
-          1e18
-        ).toFixed(6);
-        stats.averagePerContract =
-          stats.totalRegisteredContracts > 0
-            ? (newTotalEarned / stats.totalRegisteredContracts / 1e18).toFixed(
-                6
-              )
-            : '0';
-
-        // Add contract details if requested
-        if (includeContractDetails && registeredContracts.length > 0) {
-          for (const contractAddress of registeredContracts) {
-            try {
-              const contractTotalEarned =
-                (await gasbackContract.read.getContractTotalEarned([
-                  contractAddress as `0x${string}`,
-                ])) as bigint;
-
-              stats.contractDetails!.push({
-                contractAddress,
-                tokenId: tokenId.toString(),
-                totalEarnedWei: contractTotalEarned.toString(),
-                totalEarnedETH: (Number(contractTotalEarned) / 1e18).toFixed(6),
-              });
-            } catch (error) {
-              // Skip contracts that might have issues
-              continue;
-            }
-          }
-        }
+        stats.totalEarnedWei += totalGasback;
+        stats.currentBalanceWei += currentBalance;
+        stats.registeredContracts += registeredContracts.length;
+      } catch (error) {
+        // Token might not exist, skip
+        continue;
       }
     }
 
-    // Sort creators by total earnings and take top N
-    const sortedCreators = Array.from(creatorStats.values())
-      .sort((a, b) => Number(b.totalEarnedWei) - Number(a.totalEarnedWei))
+    // Convert to final format and sort
+    const allCreators = Array.from(creatorStats.values())
+      .map((stats) => ({
+        address: stats.address,
+        totalTokens: stats.totalTokens,
+        totalEarnedETH: parseFloat(
+          (Number(stats.totalEarnedWei) / 1e18).toFixed(6)
+        ),
+        currentBalanceETH: parseFloat(
+          (Number(stats.currentBalanceWei) / 1e18).toFixed(6)
+        ),
+        registeredContracts: stats.registeredContracts,
+      }))
+      .sort((a, b) => b.totalEarnedETH - a.totalEarnedETH)
       .slice(0, finalLimit);
 
-    // Calculate some global stats
-    const allCreators = Array.from(creatorStats.values());
-    const totalCreators = allCreators.length;
-    const totalEarningsAllCreators = allCreators.reduce(
-      (sum, creator) => sum + Number(creator.totalEarnedWei),
-      0
-    );
-    const totalContractsAllCreators = allCreators.reduce(
-      (sum, creator) => sum + creator.totalRegisteredContracts,
-      0
-    );
-
-    // Sort contract details within each creator if included
-    if (includeContractDetails) {
-      sortedCreators.forEach((creator) => {
-        if (creator.contractDetails) {
-          creator.contractDetails.sort(
-            (a, b) => Number(b.totalEarnedWei) - Number(a.totalEarnedWei)
-          );
-        }
-      });
-    }
-
-    const result = {
-      summary: {
-        totalCreators,
-        totalTokensScanned: totalTokens,
-        totalEarningsWei: totalEarningsAllCreators.toString(),
-        totalEarningsETH: (totalEarningsAllCreators / 1e18).toFixed(6),
-        totalRegisteredContracts: totalContractsAllCreators,
-        averageEarningsPerCreator:
-          totalCreators > 0
-            ? (totalEarningsAllCreators / totalCreators / 1e18).toFixed(6)
-            : '0',
-        topCreatorsShown: sortedCreators.length,
-      },
-      topCreators: sortedCreators,
-      timestamp: new Date().toISOString(),
-    };
+    result.totalCreatorsAnalyzed = creatorStats.size;
+    result.topCreators = allCreators;
 
     return {
       content: [
@@ -282,23 +139,19 @@ export default async function getTopShapeCreators({
       ],
     };
   } catch (error) {
+    const errorOutput: ToolErrorOutput = {
+      error: true,
+      message: `Error fetching top Shape creators: ${
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      }`,
+      timestamp: new Date().toISOString(),
+    };
+
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(
-            {
-              error: true,
-              message: `Error fetching top Shape creators: ${
-                error instanceof Error
-                  ? error.message
-                  : 'Unknown error occurred'
-              }`,
-              timestamp: new Date().toISOString(),
-            },
-            null,
-            2
-          ),
+          text: JSON.stringify(errorOutput, null, 2),
         },
       ],
     };

@@ -2,24 +2,16 @@ import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { OwnedNftsResponse } from 'alchemy-sdk';
 import { alchemy } from '../clients';
+import type { ShapeNftOutput, ToolErrorOutput } from '../types';
 
 export const schema = {
   address: z.string().describe('The wallet address to get NFTs for'),
-  pageSize: z
-    .number()
-    .optional()
-    .describe('Number of NFTs to return (default: 100, max: 100)'),
-  pageKey: z.string().optional().describe('Page key for pagination'),
-  withMetadata: z
-    .boolean()
-    .optional()
-    .describe('Whether to include NFT metadata (default: true)'),
 };
 
 export const metadata = {
   name: 'getShapeNft',
   description:
-    'Get NFTs owned by an address on Shape network using Alchemy SDK',
+    'Get essential NFT ownership data for an address: token count and basic NFT information',
   annotations: {
     title: 'Get Shape NFTs',
     readOnlyHint: true,
@@ -30,47 +22,51 @@ export const metadata = {
 
 export default async function getShapeNft({
   address,
-  pageSize = 100,
-  pageKey,
-  withMetadata = true,
 }: InferSchema<typeof schema>) {
   try {
     const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(
       address,
       {
-        pageSize,
-        pageKey,
-        omitMetadata: !withMetadata,
+        pageSize: 100,
+        omitMetadata: false,
       }
     );
+
+    const result: ShapeNftOutput = {
+      ownerAddress: address,
+      timestamp: new Date().toISOString(),
+      totalNfts: nftsResponse.totalCount || nftsResponse.ownedNfts.length,
+      nfts: nftsResponse.ownedNfts.map((nft) => ({
+        tokenId: nft.tokenId,
+        contractAddress: nft.contract.address,
+        name: nft.name || null,
+        imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
+      })),
+    };
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(nftsResponse, null, 2),
+          text: JSON.stringify(result, null, 2),
         },
       ],
     };
   } catch (error) {
+    const errorOutput: ToolErrorOutput = {
+      error: true,
+      message: `Error fetching NFTs: ${
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      }`,
+      ownerAddress: address,
+      timestamp: new Date().toISOString(),
+    };
+
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(
-            {
-              error: true,
-              message: `Error fetching NFTs: ${
-                error instanceof Error
-                  ? error.message
-                  : 'Unknown error occurred'
-              }`,
-              address,
-              timestamp: new Date().toISOString(),
-            },
-            null,
-            2
-          ),
+          text: JSON.stringify(errorOutput, null, 2),
         },
       ],
     };

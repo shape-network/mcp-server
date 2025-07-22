@@ -5,6 +5,7 @@ import { abi as gasbackAbi } from '../abi/gasback';
 import { addresses } from '../addresses';
 import { rpcClient } from '../clients';
 import { config } from '../config';
+import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../types';
 
 export const schema = {
   creatorAddress: z
@@ -15,7 +16,7 @@ export const schema = {
 export const metadata = {
   name: 'getShapeCreatorAnalytics',
   description:
-    'Get comprehensive gasback analytics for a Shape creator including total earnings, token count, and registered contracts',
+    'Get essential gasback analytics for a Shape creator: token count, earnings, balance, withdrawals, and registered contracts',
   annotations: {
     title: 'Shape Creator Gasback Analytics',
     readOnlyHint: true,
@@ -39,40 +40,36 @@ export default async function getShapeCreatorAnalytics({
       creatorAddress as `0x${string}`,
     ])) as bigint[];
 
+    const analytics: ShapeCreatorAnalyticsOutput = {
+      creatorAddress,
+      timestamp: new Date().toISOString(),
+      hasTokens: ownedTokens.length > 0,
+      totalTokens: ownedTokens.length,
+      totalEarnedETH: 0,
+      currentBalanceETH: 0,
+      totalWithdrawnETH: 0,
+      registeredContracts: 0,
+    };
+
     if (ownedTokens.length === 0) {
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify(
-              {
-                creatorAddress,
-                hasTokens: false,
-                message: 'Creator has no gasback tokens',
-                timestamp: new Date().toISOString(),
-              },
-              null,
-              2
-            ),
+            text: JSON.stringify(analytics, null, 2),
           },
         ],
       };
     }
 
-    // Get detailed data for each token
-    const tokenDetails = [];
+    // Calculate aggregate metrics
     let totalGasbackEarned = 0;
     let totalCurrentBalance = 0;
     let totalRegisteredContracts = 0;
-    const allContracts = new Set<string>();
 
     for (const tokenId of ownedTokens) {
-      const [tokenData, totalGasback, currentBalance, registeredContracts] =
+      const [totalGasback, currentBalance, registeredContracts] =
         await Promise.all([
-          gasbackContract.read.getTokenData([tokenId]) as Promise<{
-            balance: bigint;
-            registeredContracts: string[];
-          }>,
           gasbackContract.read.getTokenTotalGasback([
             tokenId,
           ]) as Promise<bigint>,
@@ -84,95 +81,21 @@ export default async function getShapeCreatorAnalytics({
           ]) as Promise<string[]>,
         ]);
 
-      const tokenTotalEarned = Number(totalGasback);
-      const tokenCurrentBalance = Number(currentBalance);
-
-      totalGasbackEarned += tokenTotalEarned;
-      totalCurrentBalance += tokenCurrentBalance;
+      totalGasbackEarned += Number(totalGasback);
+      totalCurrentBalance += Number(currentBalance);
       totalRegisteredContracts += registeredContracts.length;
-
-      registeredContracts.forEach((contract) => allContracts.add(contract));
-
-      tokenDetails.push({
-        tokenId: tokenId.toString(),
-        totalEarnedWei: totalGasback.toString(),
-        totalEarnedETH: (tokenTotalEarned / 1e18).toFixed(6),
-        currentBalanceWei: currentBalance.toString(),
-        currentBalanceETH: (tokenCurrentBalance / 1e18).toFixed(6),
-        registeredContractsCount: registeredContracts.length,
-        registeredContracts: registeredContracts,
-        withdrawnAmount: tokenTotalEarned - tokenCurrentBalance,
-        withdrawnAmountETH: (
-          (tokenTotalEarned - tokenCurrentBalance) /
-          1e18
-        ).toFixed(6),
-      });
     }
 
-    // Get contract-specific earnings for all registered contracts
-    const contractEarnings = [];
-    for (const contractAddress of allContracts) {
-      try {
-        const contractTotalEarned =
-          (await gasbackContract.read.getContractTotalEarned([
-            contractAddress as `0x${string}`,
-          ])) as bigint;
-
-        const contractData = (await gasbackContract.read.getContractData([
-          contractAddress as `0x${string}`,
-        ])) as {
-          tokenId: bigint;
-          balanceUpdatedBlock: bigint;
-          totalEarned: bigint;
-        };
-
-        contractEarnings.push({
-          contractAddress,
-          tokenId: contractData.tokenId.toString(),
-          totalEarnedWei: contractTotalEarned.toString(),
-          totalEarnedETH: (Number(contractTotalEarned) / 1e18).toFixed(6),
-          balanceUpdatedBlock: contractData.balanceUpdatedBlock.toString(),
-        });
-      } catch (error) {
-        // Contract might not be properly registered, skip
-        continue;
-      }
-    }
-
-    const analytics = {
-      creatorAddress,
-      summary: {
-        totalTokens: ownedTokens.length,
-        totalRegisteredContracts,
-        uniqueContracts: allContracts.size,
-        totalGasbackEarnedWei: totalGasbackEarned.toString(),
-        totalGasbackEarnedETH: (totalGasbackEarned / 1e18).toFixed(6),
-        totalCurrentBalanceWei: totalCurrentBalance.toString(),
-        totalCurrentBalanceETH: (totalCurrentBalance / 1e18).toFixed(6),
-        totalWithdrawnWei: (
-          totalGasbackEarned - totalCurrentBalance
-        ).toString(),
-        totalWithdrawnETH: (
-          (totalGasbackEarned - totalCurrentBalance) /
-          1e18
-        ).toFixed(6),
-        averageEarningsPerToken:
-          ownedTokens.length > 0
-            ? (totalGasbackEarned / ownedTokens.length / 1e18).toFixed(6)
-            : '0',
-        averageEarningsPerContract:
-          allContracts.size > 0
-            ? (totalGasbackEarned / allContracts.size / 1e18).toFixed(6)
-            : '0',
-      },
-      tokens: tokenDetails.sort(
-        (a, b) => Number(b.totalEarnedWei) - Number(a.totalEarnedWei)
-      ),
-      contractEarnings: contractEarnings.sort(
-        (a, b) => Number(b.totalEarnedWei) - Number(a.totalEarnedWei)
-      ),
-      timestamp: new Date().toISOString(),
-    };
+    analytics.totalEarnedETH = parseFloat(
+      (totalGasbackEarned / 1e18).toFixed(6)
+    );
+    analytics.currentBalanceETH = parseFloat(
+      (totalCurrentBalance / 1e18).toFixed(6)
+    );
+    analytics.totalWithdrawnETH = parseFloat(
+      ((totalGasbackEarned - totalCurrentBalance) / 1e18).toFixed(6)
+    );
+    analytics.registeredContracts = totalRegisteredContracts;
 
     return {
       content: [
@@ -183,24 +106,20 @@ export default async function getShapeCreatorAnalytics({
       ],
     };
   } catch (error) {
+    const errorOutput: ToolErrorOutput = {
+      error: true,
+      message: `Error analyzing creator gasback data: ${
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      }`,
+      creatorAddress,
+      timestamp: new Date().toISOString(),
+    };
+
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(
-            {
-              error: true,
-              message: `Error analyzing creator gasback data: ${
-                error instanceof Error
-                  ? error.message
-                  : 'Unknown error occurred'
-              }`,
-              creatorAddress,
-              timestamp: new Date().toISOString(),
-            },
-            null,
-            2
-          ),
+          text: JSON.stringify(errorOutput, null, 2),
         },
       ],
     };

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { alchemy } from '../clients';
+import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../types';
 
 export const schema = {
   contractAddress: z
@@ -24,16 +25,16 @@ export default async function getCollectionAnalytics({
   contractAddress,
 }: InferSchema<typeof schema>) {
   try {
-    const analytics = {
+    const analytics: CollectionAnalyticsOutput = {
       contractAddress,
       timestamp: new Date().toISOString(),
-      name: null as string | null,
-      floorPriceETH: null as number | null,
-      sevenDayVolumeETH: null as number | null,
-      sevenDaySalesCount: null as number | null,
-      averageSalePriceETH: null as number | null,
-      totalSupply: null as number | null,
-      marketCapETH: null as number | null,
+      name: null,
+      floorPriceETH: null,
+      sevenDayVolumeETH: null,
+      sevenDaySalesCount: null,
+      averageSalePriceETH: null,
+      totalSupply: null,
+      marketCapETH: null,
     };
 
     // Get basic collection info and total supply
@@ -124,24 +125,20 @@ export default async function getCollectionAnalytics({
       ],
     };
   } catch (error) {
+    const errorOutput: ToolErrorOutput = {
+      error: true,
+      message: `Error fetching collection analytics: ${
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      }`,
+      contractAddress,
+      timestamp: new Date().toISOString(),
+    };
+
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(
-            {
-              error: true,
-              message: `Error fetching collection analytics: ${
-                error instanceof Error
-                  ? error.message
-                  : 'Unknown error occurred'
-              }`,
-              contractAddress,
-              timestamp: new Date().toISOString(),
-            },
-            null,
-            2
-          ),
+          text: JSON.stringify(errorOutput, null, 2),
         },
       ],
     };
