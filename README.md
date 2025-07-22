@@ -1,37 +1,58 @@
 # Shape MCP Server
 
-Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's [gasback distribution](https://docs.shape.network/gasback), NFT analytics, and blockchain data. It's extensible & composable.
+Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's [gasback distribution](https://docs.shape.network/gasback), NFT analytics, and blockchain data.
 
 ## 🚀 Features
 
-- **Shape Creator Analytics** - Track gasback earnings and creator performance metrics
-- **NFT Collection Analytics** - Floor prices, sales volume, and marketplace data
-- **Shape Network Integration** - Native support for Shape mainnet and Sepolia testnet
-- **Real-time Data** - Powered by Alchemy's robust blockchain APIs
+- **🏗️ Modular Tool Categories** - Organized by functionality for easy extension
+- **💰 Gasback Analytics** - Creator performance, top earners, and reward simulations
+- **🖼️ NFT Ecosystem Analysis** - Collection metrics and ownership tracking
+- **📊 Educational Simulations** - Model potential rewards without transactions
+- **⚡ Network Monitoring** - Real-time Shape network health and gas price tracking
+- **🔗 Event Analysis** - Decode and understand protocol mechanics
+- **🤖 AI Framework Ready** - Built for agent chaining and workflow automation
 
 ## 🛠 Available Tools
 
-### `getShapeCreatorAnalytics`
+### 🏗️ Network Tools (`/tools/stack/`)
 
-Get comprehensive gasback analytics for a specific creator address including total earnings, token count, and registered contracts.
+#### `getChainStatus`
 
-### `getTopShapeCreators`
+Monitor Shape network health, gas prices, latest block info, and average block times. Perfect for AI agents needing network context.
 
-List the top creators on Shape by gasback earnings with comprehensive stats including token counts and contract details.
+#### `decodeGasbackEvents`
 
-### `getCollectionAnalytics`
+Analyze Gasback contract events with detailed decoding and educational descriptions. Helps understand protocol mechanics through event logs.
 
-Get onchain NFT collection analytics including name, symbol, total supply, owner count, token standard, and sample NFTs. Simple input (contract address only) with reliable onchain data that works on any network.
+### 🖼️ NFT Tools (`/tools/nft/`)
 
-### `getShapeNft`
+#### `getCollectionAnalytics`
 
-Get NFTs owned by an address on Shape network.
+Get comprehensive NFT collection analytics including name, symbol, total supply, owner count, token standard, and sample NFTs. Optimized with parallel API calls for better performance.
+
+#### `getShapeNft`
+
+Get NFTs owned by a specific address on Shape network with detailed metadata.
+
+### 💰 Gasback Tools (`/tools/gasback/`)
+
+#### `getShapeCreatorAnalytics`
+
+Deep dive into creator Gasback performance with earnings, token count, balance, withdrawals, and registered contracts.
+
+#### `getTopShapeCreators`
+
+Discover the top 25 creators by Gasback earnings with comprehensive stats. Now uses efficient multicall batching for 100x performance improvement.
+
+#### `simulateGasbackRewards`
+
+Educational simulation tool for modeling potential Gasback rewards based on contract usage patterns. Includes daily breakdowns, assumptions, and disclaimers.
 
 ## 📋 Prerequisites
 
 - Node.js 20+
 - An [Alchemy API key](https://dashboard.alchemy.com/)
-- MCP-compatible client (Cursor IDE, Claude Desktop or AI agent interface)
+- MCP-compatible client (Cursor IDE, Claude Desktop, or AI agent framework)
 
 ## 🔧 Setup
 
@@ -65,7 +86,7 @@ This starts the MCP server on `http://localhost:3002/mcp`
 
 ## 🔌 Client Integration
 
-### Example IDE Setup
+### MCP Settings
 
 Add to your MCP settings:
 
@@ -81,22 +102,34 @@ Add to your MCP settings:
 
 ## 💡 Usage Examples
 
-### Analyze Creator Gasback Earnings
+### Basic Analysis
 
 ```
-Get gasback analytics for creator address 0xabcd...
+Analyze creator 0xabcd... performance and compare with top creators
 ```
 
-### Top Creators by Gasback
+### Network Monitoring
 
 ```
-Show me the top creators on Shape by gasback earnings
+What's the current Shape network status and gas prices?
 ```
 
-### Get NFT Collection Analytics
+### Educational Simulation
 
 ```
-Analyze NFT collection for contract address 0x5678...
+Simulate potential Gasback rewards for contract 0x1234... with 50 transactions per day over 3 months
+```
+
+### Event Investigation
+
+```
+Show me recent Gasback distribution events and explain what they mean
+```
+
+### Comprehensive Workflow
+
+```
+Analyze NFT collection 0x5678..., check if the owner has Gasback NFTs, and simulate potential rewards
 ```
 
 ## 🏗 Building for Production
@@ -109,25 +142,32 @@ yarn build
 
 ```
 src/
-├── tools/                    # MCP tools directory
-│   ├── get-shape-creator-analytics.ts
-│   ├── get-top-shape-creators.ts
-│   ├── get-collection-analytics.ts
-│   └── get-shape-nft.ts
-├── abi/                     # Contract ABIs
-│   └── gasback.ts          # Shape gasback contract ABI
-├── addresses.ts             # Contract addresses
-├── clients.ts               # Blockchain clients
-├── config.ts                # Configuration management
-├── middleware.ts            # Request middleware
-└── xmcp.config.ts          # XMCP configuration
+├── tools/                   # Modular tool categories
+│   ├── stack/              # Network & protocol tools
+│   │   ├── get-chain-status.ts
+│   │   └── decode-gasback-events.ts
+│   ├── nft/                # NFT analysis tools
+│   │   ├── get-collection-analytics.ts
+│   │   └── get-shape-nft.ts
+│   └── gasback/            # Gasback & creator tools
+│       ├── get-shape-creator-analytics.ts
+│       ├── get-top-shape-creators.ts
+│       └── simulate-gasback-rewards.ts
+├── abi/                    # Contract ABIs
+│   └── gasback.ts         # Shape gasback contract ABI
+├── addresses.ts            # Contract addresses
+├── clients.ts              # Blockchain clients (RPC + Alchemy)
+├── config.ts               # Configuration management
+├── middleware.ts           # Request middleware
+├── types.ts                # TypeScript type definitions
+└── xmcp.config.ts         # XMCP configuration
 ```
 
 ## 🔧 Adding New Tools
 
-1. Create a new `.ts` file in `src/tools/`
+1. Create a new `.ts` file in the appropriate category folder (`/tools/stack/`, `/tools/nft/`, `/tools/gasback/`)
 2. Export a Zod `schema` for parameters
-3. Export `metadata` with tool information
+3. Export `metadata` with comprehensive annotations for AI frameworks
 4. Export default function with tool logic
 
 ```typescript
@@ -135,24 +175,33 @@ import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 
 export const schema = {
-  address: z.string().describe('Wallet address'),
+  address: z.string().describe('Wallet address to analyze'),
 };
 
 export const metadata = {
   name: 'myTool',
-  description: 'My custom tool',
+  description: 'My custom tool for AI agents',
   annotations: {
     title: 'My Tool',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
+    requiresWallet: false,
+    category: 'analysis',
+    educationalHint: true,
+    chainableWith: ['otherTool1', 'otherTool2'],
   },
 };
 
 export default async function myTool({ address }: InferSchema<typeof schema>) {
-  // Tool implementation
+  // Tool implementation with structured output
   return {
-    content: [{ type: 'text', text: 'Result' }],
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify(result, null, 2),
+      },
+    ],
   };
 }
 ```
