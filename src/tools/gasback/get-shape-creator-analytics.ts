@@ -1,4 +1,4 @@
-import { getContract } from 'viem';
+import { Address, getContract } from 'viem';
 import { type InferSchema } from 'xmcp';
 import { z } from 'zod';
 import { abi as gasbackAbi } from '../../abi/gasback';
@@ -38,7 +38,7 @@ export default async function getShapeCreatorAnalytics({
     });
 
     const ownedTokens = (await gasbackContract.read.getOwnedTokens([
-      creatorAddress as `0x${string}`,
+      creatorAddress as Address,
     ])) as bigint[];
 
     const analytics: ShapeCreatorAnalyticsOutput = {

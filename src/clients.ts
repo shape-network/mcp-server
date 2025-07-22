@@ -1,6 +1,6 @@
 import { Alchemy, Network } from 'alchemy-sdk';
 import { createPublicClient, http } from 'viem';
-import { shape, shapeSepolia } from 'viem/chains';
+import { mainnet, shape, shapeSepolia } from 'viem/chains';
 import { config } from './config';
 
 export const alchemy = new Alchemy({
@@ -9,9 +9,8 @@ export const alchemy = new Alchemy({
 });
 
 export function rpcClient() {
-  const chainId = config.chainId;
-  const chain = chainId === shape.id ? shape : shapeSepolia;
-  const rootUrl = chainId === shape.id ? 'shape-mainnet' : 'shape-sepolia';
+  const chain = config.chainId === shape.id ? shape : shapeSepolia;
+  const rootUrl = chain.id === shape.id ? 'shape-mainnet' : 'shape-sepolia';
 
   return createPublicClient({
     chain,
@@ -19,5 +18,12 @@ export function rpcClient() {
     batch: {
       multicall: true,
     },
+  });
+}
+
+export function mainnetRpcClient() {
+  return createPublicClient({
+    chain: mainnet,
+    transport: http(`https://mainnet.g.alchemy.com/v2/${config.alchemyApiKey}`),
   });
 }

@@ -1,4 +1,4 @@
-import { getContract } from 'viem';
+import { Address, getContract } from 'viem';
 import { type InferSchema } from 'xmcp';
 import { abi as gasbackAbi } from '../../abi/gasback';
 import { addresses } from '../../addresses';
@@ -51,7 +51,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
     const ownerCalls: any[] = [];
     for (let tokenId = 1; tokenId <= totalTokens; tokenId++) {
       ownerCalls.push({
-        address: addresses.gasback[config.chainId] as `0x${string}`,
+        address: addresses.gasback[config.chainId] as Address,
         abi: gasbackAbi,
         functionName: 'ownerOf' as const,
         args: [BigInt(tokenId)],
@@ -96,19 +96,19 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
     for (const tokenId of tokenOwners.keys()) {
       analyticsCalls.push(
         {
-          address: addresses.gasback[config.chainId] as `0x${string}`,
+          address: addresses.gasback[config.chainId] as Address,
           abi: gasbackAbi,
           functionName: 'getTokenTotalGasback' as const,
           args: [BigInt(tokenId)],
         },
         {
-          address: addresses.gasback[config.chainId] as `0x${string}`,
+          address: addresses.gasback[config.chainId] as Address,
           abi: gasbackAbi,
           functionName: 'getTokenGasbackBalance' as const,
           args: [BigInt(tokenId)],
         },
         {
-          address: addresses.gasback[config.chainId] as `0x${string}`,
+          address: addresses.gasback[config.chainId] as Address,
           abi: gasbackAbi,
           functionName: 'getTokenRegisteredContracts' as const,
           args: [BigInt(tokenId)],

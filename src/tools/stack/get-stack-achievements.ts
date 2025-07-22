@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { getContract } from 'viem';
+import { getContract, isAddress } from 'viem';
 import { abi as stackAbi } from '../../abi/stack';
 import { addresses } from '../../addresses';
-import { rpcClient } from '../../clients';
+import { mainnetRpcClient, rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { StackAchievementsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  userAddress: z.string().describe('The user address to fetch Stack achievements for'),
+  userAddress: z.string().describe('The user address or ENS name to fetch Stack achievements for'),
 };
 
 export const metadata = {
@@ -34,13 +34,38 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
       client: rpcClient(),
     });
 
-    const stackId = (await stackContract.read.addressToTokenId([
-      userAddress as `0x${string}`,
-    ])) as bigint;
+    let resolvedAddress: string;
+
+    if (isAddress(userAddress)) {
+      resolvedAddress = userAddress;
+    } else {
+      const rpc = mainnetRpcClient();
+      const ensAddress = await rpc.getEnsAddress({ name: userAddress });
+      if (!ensAddress) {
+        const errorOutput: ToolErrorOutput = {
+          error: true,
+          message: `Unable to resolve ENS name: ${userAddress}`,
+          userAddress,
+          timestamp: new Date().toISOString(),
+        };
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(errorOutput, null, 2),
+            },
+          ],
+        };
+      }
+      resolvedAddress = ensAddress;
+    }
+
+    const stackId = (await stackContract.read.addressToTokenId([resolvedAddress])) as bigint;
 
     if (stackId === BigInt(0)) {
       const result: StackAchievementsOutput = {
-        userAddress,
+        userAddress: resolvedAddress,
         timestamp: new Date().toISOString(),
         hasStack: false,
         totalMedals: 0,
@@ -102,8 +127,36 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
       }
     }
 
+    const totalSupply = (await stackContract.read.totalSupply()) as bigint;
+    const totalStackHolders = Number(totalSupply);
+
+    let rank = 1;
+    const userTotalMedals = medals.length;
+
+    for (let i = 1; i <= totalStackHolders; i++) {
+      try {
+        const currentStackId = BigInt(i);
+        const currentStackMedals = (await stackContract.read.getStackMedals([
+          currentStackId,
+        ])) as Array<{
+          stackOwner: string;
+          stackId: bigint;
+          medalUID: string;
+          medalTier: number;
+          medalData: string;
+          timestamp: bigint;
+        }>;
+
+        if (currentStackMedals.length > userTotalMedals) {
+          rank++;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+
     const result: StackAchievementsOutput = {
-      userAddress,
+      userAddress: resolvedAddress,
       timestamp: new Date().toISOString(),
       hasStack: true,
       totalMedals: medals.length,
