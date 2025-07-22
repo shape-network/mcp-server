@@ -56,7 +56,6 @@ Get Stack achievement analytics for users including medal counts by tier (bronze
 
 ## 📋 Prerequisites
 
-- Node.js 20+
 - An [Alchemy API key](https://dashboard.alchemy.com/)
 - MCP-compatible client (Cursor IDE, Claude Desktop, or AI agent framework)
 
@@ -72,8 +71,8 @@ ALCHEMY_API_KEY=your_alchemy_api_key_here
 
 # Network Configuration
 CHAIN_ID=360  # Shape Mainnet
-or
-CHAIN_ID=11011  # Shape Sepolia Testnet
+# OR
+# CHAIN_ID=11011  # Shape Sepolia Testnet
 ```
 
 ### 2. Install Dependencies
@@ -94,7 +93,7 @@ This starts the MCP server on `http://localhost:3002/mcp`
 
 ### MCP Settings
 
-Add to your MCP settings:
+Add to your MCP settings in Cursor for eg:
 
 ```json
 {
@@ -161,6 +160,7 @@ src/
 │       └── simulate-gasback-rewards.ts
 ├── abi/                    # Contract ABIs
 │   └── gasback.ts         # Shape gasback contract ABI
+│   └── stack.ts           # Shape stack contract ABI
 ├── addresses.ts            # Contract addresses
 ├── clients.ts              # Blockchain clients (RPC + Alchemy)
 ├── config.ts               # Configuration management
@@ -193,8 +193,7 @@ export const metadata = {
     destructiveHint: false,
     idempotentHint: true,
     requiresWallet: false,
-    category: 'analysis',
-    educationalHint: true,
+    category: 'myToolCategory',
     chainableWith: ['otherTool1', 'otherTool2'],
   },
 };
