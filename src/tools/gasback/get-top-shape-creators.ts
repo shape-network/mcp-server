@@ -11,9 +11,9 @@ export const schema = {};
 export const metadata = {
   name: 'getTopShapeCreators',
   description:
-    'Get the top 25 creators on Shape by gasback earnings: token count, total earned, current balance, and registered contracts',
+    'Get the top 15 creators on Shape by gasback earnings: token count, total earned, current balance, and registered contracts',
   annotations: {
-    title: 'Top 25 Shape Creators by Gasback',
+    title: 'Top 15 Shape Creators by Gasback',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
@@ -194,7 +194,7 @@ export default async function getTopShapeCreators({}: InferSchema<
         registeredContracts: stats.registeredContracts,
       }))
       .sort((a, b) => b.totalEarnedETH - a.totalEarnedETH)
-      .slice(0, 25);
+      .slice(0, 15);
 
     result.totalCreatorsAnalyzed = creatorStats.size;
     result.topCreators = topCreators;

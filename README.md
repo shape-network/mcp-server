@@ -42,7 +42,7 @@ Deep dive into creator Gasback performance with earnings, token count, balance, 
 
 #### `getTopShapeCreators`
 
-Discover the **top 25 creators** by Gasback earnings with comprehensive stats. Uses efficient multicall batching for 100x performance improvement. Limit is fixed at 25 for optimal performance.
+Discover the **top creators** by Gasback earnings with comprehensive stats. Uses efficient multicall batching for 100x performance improvement. Limit is fixed at 25 for optimal performance.
 
 #### `simulateGasbackRewards`
 
