@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { OwnedNftsResponse } from 'alchemy-sdk';
+import { NftFilters, NftOrdering, OwnedNftsResponse } from 'alchemy-sdk';
 import { alchemy } from '../../clients';
 import type { ShapeNftOutput, ToolErrorOutput } from '../../types';
 
@@ -27,8 +27,10 @@ export default async function getShapeNft({
     const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(
       address,
       {
-        pageSize: 100,
+        pageSize: 25,
         omitMetadata: false,
+        orderBy: NftOrdering.TRANSFERTIME,
+        excludeFilters: [NftFilters.SPAM, NftFilters.AIRDROPS],
       }
     );
 
