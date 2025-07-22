@@ -2,12 +2,15 @@ export type CollectionAnalyticsOutput = {
   contractAddress: string;
   timestamp: string;
   name: string | null;
-  floorPriceETH: number | null;
-  sevenDayVolumeETH: number | null;
-  sevenDaySalesCount: number | null;
-  averageSalePriceETH: number | null;
+  symbol: string | null;
   totalSupply: number | null;
-  marketCapETH: number | null;
+  ownerCount: number | null;
+  contractType: string | null;
+  sampleNfts: Array<{
+    tokenId: string;
+    name: string | null;
+    imageUrl: string | null;
+  }>;
 };
 
 export type ShapeCreatorAnalyticsOutput = {

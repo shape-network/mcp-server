@@ -21,7 +21,7 @@ List the top creators on Shape by gasback earnings with comprehensive stats incl
 
 ### `getCollectionAnalytics`
 
-Get essential NFT collection analytics including name, floor price, 7-day volume, sales count, average price, total supply, and market cap. Simple input (contract address only) with clean, focused output of key metrics.
+Get onchain NFT collection analytics including name, symbol, total supply, owner count, token standard, and sample NFTs. Simple input (contract address only) with reliable onchain data that works on any network.
 
 ### `getShapeNft`
 
@@ -119,7 +119,7 @@ Get comprehensive Shape gasback ecosystem statistics
 ### Get NFT Collection Analytics
 
 ```
-Get collection analytics for contract address 0x5678...
+Analyze NFT collection for contract address 0x5678...
 ```
 
 ## 🏗 Building for Production

@@ -12,7 +12,7 @@ export const schema = {
 export const metadata = {
   name: 'getCollectionAnalytics',
   description:
-    'Get essential NFT collection analytics: name, floor price, 7-day volume, sales count, average price, total supply, and market cap',
+    'Get onchain NFT collection analytics: name, symbol, total supply, owner count, token standard, and sample NFTs',
   annotations: {
     title: 'NFT Collection Analytics',
     readOnlyHint: true,
@@ -29,20 +29,19 @@ export default async function getCollectionAnalytics({
       contractAddress,
       timestamp: new Date().toISOString(),
       name: null,
-      floorPriceETH: null,
-      sevenDayVolumeETH: null,
-      sevenDaySalesCount: null,
-      averageSalePriceETH: null,
+      symbol: null,
       totalSupply: null,
-      marketCapETH: null,
+      ownerCount: null,
+      contractType: null,
+      sampleNfts: [],
     };
 
-    // Get basic collection info and total supply
+    // Get basic collection info, sample NFTs, and metadata
     try {
       const collectionNfts = await alchemy.nft.getNftsForContract(
         contractAddress,
         {
-          pageSize: 1,
+          pageSize: 10,
           omitMetadata: false,
         }
       );
@@ -50,70 +49,29 @@ export default async function getCollectionAnalytics({
       if (collectionNfts.nfts.length > 0) {
         const sampleNft = collectionNfts.nfts[0];
         analytics.name = sampleNft.contract.name || null;
+        analytics.symbol = sampleNft.contract.symbol || null;
         analytics.totalSupply = sampleNft.contract.totalSupply
           ? parseInt(sampleNft.contract.totalSupply)
           : null;
+        analytics.contractType = sampleNft.contract.tokenType || null;
+
+        // Get sample NFTs (up to 5)
+        analytics.sampleNfts = collectionNfts.nfts.slice(0, 5).map((nft) => ({
+          tokenId: nft.tokenId,
+          name: nft.name || null,
+          imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
+        }));
       }
     } catch (error) {
       console.warn('Could not fetch collection info:', error);
     }
 
-    // Get floor price
+    // Get owner count
     try {
-      const floorPriceData = await alchemy.nft.getFloorPrice(contractAddress);
-      const data = floorPriceData as any;
-      if (data?.looksRare?.floorPrice) {
-        analytics.floorPriceETH = parseFloat(data.looksRare.floorPrice);
-      } else if (data?.openSea?.floorPrice) {
-        analytics.floorPriceETH = parseFloat(data.openSea.floorPrice);
-      }
+      const owners = await alchemy.nft.getOwnersForContract(contractAddress);
+      analytics.ownerCount = owners.owners.length;
     } catch (error) {
-      console.warn('Could not fetch floor price:', error);
-    }
-
-    // Get 7-day sales data
-    try {
-      const latestBlock = await alchemy.core.getBlockNumber();
-      // Approximately 7 days of blocks (assuming ~2 second block times)
-      const fromBlock = Math.max(0, latestBlock - 302400);
-
-      const salesData = await alchemy.nft.getNftSales({
-        fromBlock,
-        toBlock: 'latest',
-        contractAddress,
-        limit: 100,
-      });
-
-      const sales = salesData.nftSales || [];
-      analytics.sevenDaySalesCount = sales.length;
-
-      if (sales.length > 0) {
-        let totalVolumeWei = 0;
-        sales.forEach((sale) => {
-          if (sale.sellerFee?.amount) {
-            totalVolumeWei += parseInt(sale.sellerFee.amount);
-          }
-        });
-
-        analytics.sevenDayVolumeETH = parseFloat(
-          (totalVolumeWei / 1e18).toFixed(4)
-        );
-        analytics.averageSalePriceETH = parseFloat(
-          (totalVolumeWei / sales.length / 1e18).toFixed(4)
-        );
-      } else {
-        analytics.sevenDayVolumeETH = 0;
-        analytics.averageSalePriceETH = 0;
-      }
-    } catch (error) {
-      console.warn('Could not fetch sales data:', error);
-    }
-
-    // Calculate market cap (floor price × total supply)
-    if (analytics.floorPriceETH && analytics.totalSupply) {
-      analytics.marketCapETH = parseFloat(
-        (analytics.floorPriceETH * analytics.totalSupply).toFixed(4)
-      );
+      console.warn('Could not fetch owner count:', error);
     }
 
     return {
