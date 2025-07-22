@@ -36,42 +36,41 @@ export default async function getCollectionAnalytics({
       sampleNfts: [],
     };
 
-    // Get basic collection info, sample NFTs, and metadata
-    try {
-      const collectionNfts = await alchemy.nft.getNftsForContract(
-        contractAddress,
-        {
-          pageSize: 10,
-          omitMetadata: false,
-        }
-      );
+    // Parallelize API calls for better performance
+    const [collectionResult, ownersResult] = await Promise.allSettled([
+      alchemy.nft.getNftsForContract(contractAddress, {
+        pageSize: 10,
+        omitMetadata: false,
+      }),
+      alchemy.nft.getOwnersForContract(contractAddress),
+    ]);
 
-      if (collectionNfts.nfts.length > 0) {
-        const sampleNft = collectionNfts.nfts[0];
-        analytics.name = sampleNft.contract.name || null;
-        analytics.symbol = sampleNft.contract.symbol || null;
-        analytics.totalSupply = sampleNft.contract.totalSupply
-          ? parseInt(sampleNft.contract.totalSupply)
-          : null;
-        analytics.contractType = sampleNft.contract.tokenType || null;
+    // Process collection info
+    if (
+      collectionResult.status === 'fulfilled' &&
+      collectionResult.value.nfts.length > 0
+    ) {
+      const sampleNft = collectionResult.value.nfts[0];
+      analytics.name = sampleNft.contract.name || null;
+      analytics.symbol = sampleNft.contract.symbol || null;
+      analytics.totalSupply = sampleNft.contract.totalSupply
+        ? parseInt(sampleNft.contract.totalSupply)
+        : null;
+      analytics.contractType = sampleNft.contract.tokenType || null;
 
-        // Get sample NFTs (up to 5)
-        analytics.sampleNfts = collectionNfts.nfts.slice(0, 5).map((nft) => ({
+      // Get sample NFTs (up to 5)
+      analytics.sampleNfts = collectionResult.value.nfts
+        .slice(0, 5)
+        .map((nft) => ({
           tokenId: nft.tokenId,
           name: nft.name || null,
           imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
         }));
-      }
-    } catch (error) {
-      console.warn('Could not fetch collection info:', error);
     }
 
-    // Get owner count
-    try {
-      const owners = await alchemy.nft.getOwnersForContract(contractAddress);
-      analytics.ownerCount = owners.owners.length;
-    } catch (error) {
-      console.warn('Could not fetch owner count:', error);
+    // Process owner count
+    if (ownersResult.status === 'fulfilled') {
+      analytics.ownerCount = ownersResult.value.owners.length;
     }
 
     return {
