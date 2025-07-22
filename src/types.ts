@@ -11,6 +11,20 @@ export type CollectionAnalyticsOutput = {
     name: string | null;
     imageUrl: string | null;
   }>;
+  floorPrice: {
+    openSea: {
+      floorPrice: number | null;
+      priceCurrency: string | null;
+      collectionUrl: string | null;
+      retrievedAt: string | null;
+    } | null;
+    looksRare: {
+      floorPrice: number | null;
+      priceCurrency: string | null;
+      collectionUrl: string | null;
+      retrievedAt: string | null;
+    } | null;
+  } | null;
 };
 
 export type ShapeCreatorAnalyticsOutput = {
@@ -55,4 +69,54 @@ export type ToolErrorOutput = {
   creatorAddress?: string;
   ownerAddress?: string;
   timestamp: string;
+  userAddress?: string;
+};
+
+export type GasbackSimulationOutput = {
+  contractAddress: string;
+  timestamp: string;
+  hypotheticalTxs: number;
+  avgGasPerTx: number;
+  currentGasPriceWei: number;
+  estimatedEarningsETH: number;
+};
+
+export type StackAchievementsOutput = {
+  userAddress: string;
+  timestamp: string;
+  hasStack: boolean;
+  totalMedals: number;
+  medalsByTier: {
+    bronze: number;
+    silver: number;
+    gold: number;
+    special: number;
+  };
+  lastMedalClaimed: {
+    medalUID: string;
+    claimedAt: string;
+  } | null;
+};
+
+export type ChainStatusOutput = {
+  timestamp: string;
+  network: string;
+  chainId: number;
+  rpcHealthy: boolean;
+  gasPrice: {
+    wei: string;
+    gwei: string;
+    eth: string;
+  } | null;
+  avgBlockTime: number | null;
+};
+
+export type TrendingCollectionsOutput = {
+  timestamp: string;
+  timeWindow: string;
+  trending: Array<{
+    contractAddress: string;
+    volumeETH: number;
+    mintCount: number;
+  }>;
 };
