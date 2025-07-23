@@ -5,7 +5,6 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "type": "module",
   "scripts": {
     "build": "xmcp build",
     "dev": "xmcp dev",
