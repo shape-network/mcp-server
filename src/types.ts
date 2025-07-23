@@ -16,27 +16,22 @@ export type CollectionAnalyticsOutput = {
   floorPrice: GetFloorPriceResponse | null;
 };
 
-export type ShapeCreatorAnalyticsOutput = {
-  creatorAddress: string;
+export type ShapeCreatorAnalyticsOutput = CreatorAnalytics & {
   timestamp: string;
-  hasTokens: boolean;
-  totalTokens: number;
-  totalEarnedETH: number;
+};
+
+type CreatorAnalytics = {
+  address: string;
+  ensName: string | null;
+  totalGasbackEarnedETH: number;
   currentBalanceETH: number;
-  totalWithdrawnETH: number;
   registeredContracts: number;
 };
 
 export type TopShapeCreatorsOutput = {
   timestamp: string;
   totalCreatorsAnalyzed: number;
-  topCreators: Array<{
-    address: string;
-    ensName: string | null;
-    totalGasbackEarnedETH: number;
-    currentBalanceETH: number;
-    registeredContracts: number;
-  }>;
+  topCreators: CreatorAnalytics[];
 };
 
 export type ShapeNftOutput = {
