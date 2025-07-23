@@ -1,7 +1,7 @@
 import { type Middleware } from 'xmcp';
 
 const middleware: Middleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  // const authHeader = req.headers.authorization;
 
   // TODO: add auth checks, rate limiting, etc.
   // if (!customHeaderValidation(authHeader)) {

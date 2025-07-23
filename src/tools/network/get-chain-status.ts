@@ -1,5 +1,4 @@
-import { type InferSchema } from 'xmcp';
-import { z } from 'zod';
+import { formatEther, formatGwei } from 'viem';
 import { rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { ChainStatusOutput, ToolErrorOutput } from '../../types';
@@ -21,10 +20,9 @@ export const metadata = {
   },
 };
 
-export default async function getChainStatus({}: InferSchema<typeof schema>) {
+export default async function getChainStatus() {
   try {
     const client = rpcClient();
-    const startTime = Date.now();
 
     const result: ChainStatusOutput = {
       timestamp: new Date().toISOString(),
@@ -36,7 +34,7 @@ export default async function getChainStatus({}: InferSchema<typeof schema>) {
     };
 
     try {
-      const [latestBlock, gasPrice, blockNumber] = await Promise.allSettled([
+      const [latestBlock, gasPrice] = await Promise.allSettled([
         client.getBlock({ blockTag: 'latest' }),
         client.getGasPrice(),
         client.getBlockNumber(),
@@ -68,21 +66,21 @@ export default async function getChainStatus({}: InferSchema<typeof schema>) {
             }
             result.avgBlockTime = timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
           }
-        } catch (error) {}
+        } catch (error) {
+          console.error(error);
+        }
       }
 
       if (gasPrice.status === 'fulfilled') {
         const gasPriceWei = gasPrice.value;
-        const gasPriceGwei = Number(gasPriceWei) / 1e9;
-        const gasPriceEth = Number(gasPriceWei) / 1e18;
 
         result.gasPrice = {
-          wei: gasPriceWei.toString(),
-          gwei: gasPriceGwei.toFixed(4),
-          eth: gasPriceEth.toFixed(12),
+          gwei: formatGwei(gasPriceWei),
+          eth: formatEther(gasPriceWei),
         };
       }
     } catch (error) {
+      console.error(error);
       result.rpcHealthy = false;
     }
 
