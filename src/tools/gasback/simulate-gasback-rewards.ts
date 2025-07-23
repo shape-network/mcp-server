@@ -1,10 +1,16 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
+import { isAddress } from 'viem';
 import { rpcClient } from '../../clients';
 import type { GasbackSimulationOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  contractAddress: z.string().describe('The contract address to simulate Gasback for'),
+  contractAddress: z
+    .string()
+    .refine((address) => isAddress(address), {
+      message: 'Invalid address',
+    })
+    .describe('The contract address to simulate Gasback for'),
   hypotheticalTxs: z.number().default(100).describe('Number of hypothetical user transactions'),
   avgGasPerTx: z.number().default(100000).describe('Average gas used per transaction'),
 };
@@ -14,11 +20,14 @@ export const metadata = {
   description:
     'Simulate potential Gasback earnings for a creator based on hypothetical user interactions (80% rebate model)',
   annotations: {
-    title: 'Gasback Earnings Simulator',
+    title: 'Gasback Simulation',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
-    simulation: true,
+    requiresWallet: false,
+    category: 'gasback-analysis',
+    educationalHint: true,
+    chainableWith: ['getShapeCreatorAnalytics', 'getTopShapeCreators'],
   },
 };
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { getContract, isAddress } from 'viem';
+import { Address, getContract, isAddress } from 'viem';
 import { abi as stackAbi } from '../../abi/stack';
 import { addresses } from '../../addresses';
 import { mainnetRpcClient, rpcClient } from '../../clients';
@@ -8,7 +8,12 @@ import { config } from '../../config';
 import type { StackAchievementsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  userAddress: z.string().describe('The user address or ENS name to fetch Stack achievements for'),
+  userAddress: z
+    .string()
+    .refine((address) => isAddress(address), {
+      message: 'Invalid address',
+    })
+    .describe('The user address or ENS name to fetch Stack achievements for'),
 };
 
 export const metadata = {
@@ -34,7 +39,7 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
       client: rpcClient(),
     });
 
-    let resolvedAddress: string;
+    let resolvedAddress: Address;
 
     if (isAddress(userAddress)) {
       resolvedAddress = userAddress;
@@ -45,7 +50,7 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
         const errorOutput: ToolErrorOutput = {
           error: true,
           message: `Unable to resolve ENS name: ${userAddress}`,
-          userAddress,
+          userAddress: userAddress,
           timestamp: new Date().toISOString(),
         };
 
@@ -155,7 +160,7 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
       message: `Error fetching Stack achievements: ${
         error instanceof Error ? error.message : 'Unknown error'
       }`,
-      userAddress,
+      userAddress: userAddress,
       timestamp: new Date().toISOString(),
     };
 

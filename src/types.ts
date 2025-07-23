@@ -1,7 +1,8 @@
 import { GetFloorPriceResponse } from 'alchemy-sdk';
+import { Address } from 'viem';
 
 export type CollectionAnalyticsOutput = {
-  contractAddress: string;
+  contractAddress: Address;
   timestamp: string;
   name: string | null;
   symbol: string | null;
@@ -21,7 +22,7 @@ export type ShapeCreatorAnalyticsOutput = CreatorAnalytics & {
 };
 
 type CreatorAnalytics = {
-  address: string;
+  address: Address;
   ensName: string | null;
   totalGasbackEarnedETH: number;
   currentBalanceETH: number;
@@ -35,12 +36,12 @@ export type TopShapeCreatorsOutput = {
 };
 
 export type ShapeNftOutput = {
-  ownerAddress: string;
+  ownerAddress: Address;
   timestamp: string;
   totalNfts: number;
   nfts: Array<{
     tokenId: string;
-    contractAddress: string;
+    contractAddress: Address;
     name: string | null;
     imageUrl: string | null;
   }>;
@@ -49,15 +50,15 @@ export type ShapeNftOutput = {
 export type ToolErrorOutput = {
   error: true;
   message: string;
-  contractAddress?: string;
-  creatorAddress?: string;
-  ownerAddress?: string;
+  contractAddress?: Address;
+  creatorAddress?: Address;
+  ownerAddress?: Address;
   timestamp: string;
-  userAddress?: string;
+  userAddress?: Address;
 };
 
 export type GasbackSimulationOutput = {
-  contractAddress: string;
+  contractAddress: Address;
   timestamp: string;
   hypotheticalTxs: number;
   avgGasPerTx: number;
@@ -66,7 +67,7 @@ export type GasbackSimulationOutput = {
 };
 
 export type StackAchievementsOutput = {
-  userAddress: string;
+  userAddress: Address;
   timestamp: string;
   hasStack: boolean;
   totalMedals: number;
@@ -98,7 +99,7 @@ export type TrendingCollectionsOutput = {
   timestamp: string;
   timeWindow: string;
   trending: Array<{
-    contractAddress: string;
+    contractAddress: Address;
     volumeETH: number;
     mintCount: number;
   }>;
