@@ -1,7 +1,7 @@
-import { Address, getContract } from 'viem';
+import { Address, formatEther, getContract } from 'viem';
 import { abi as gasbackAbi } from '../../abi/gasback';
 import { addresses } from '../../addresses';
-import { rpcClient } from '../../clients';
+import { mainnetRpcClient, rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { TopShapeCreatorsOutput, ToolErrorOutput } from '../../types';
 
@@ -74,10 +74,10 @@ export default async function getTopShapeCreators() {
       }
     }
 
-    const tokenOwners = new Map<number, string>();
+    const tokenOwners = new Map<number, Address>();
     ownerResults.forEach((result, index) => {
       if (result.status === 'success' && result.result) {
-        tokenOwners.set(index + 1, result.result as string);
+        tokenOwners.set(index + 1, result.result as Address);
       }
     });
 
@@ -135,8 +135,9 @@ export default async function getTopShapeCreators() {
       string,
       {
         address: string;
+        ensName: string | null;
         totalTokens: number;
-        totalEarnedWei: bigint;
+        totalGasbackEarnedWei: bigint;
         currentBalanceWei: bigint;
         registeredContracts: number;
       }
@@ -157,10 +158,13 @@ export default async function getTopShapeCreators() {
         registeredContractsResult.status === 'success'
       ) {
         if (!creatorStats.has(owner)) {
+          const rpc = mainnetRpcClient();
+          const ens = await rpc.getEnsName({ address: owner });
           creatorStats.set(owner, {
             address: owner,
+            ensName: ens,
             totalTokens: 0,
-            totalEarnedWei: BigInt(0),
+            totalGasbackEarnedWei: BigInt(0),
             currentBalanceWei: BigInt(0),
             registeredContracts: 0,
           });
@@ -168,7 +172,7 @@ export default async function getTopShapeCreators() {
 
         const stats = creatorStats.get(owner)!;
         stats.totalTokens += 1;
-        stats.totalEarnedWei += totalGasbackResult.result as bigint;
+        stats.totalGasbackEarnedWei += totalGasbackResult.result as bigint;
         stats.currentBalanceWei += currentBalanceResult.result as bigint;
         stats.registeredContracts += (registeredContractsResult.result as string[]).length;
       }
@@ -177,12 +181,12 @@ export default async function getTopShapeCreators() {
     const topCreators = Array.from(creatorStats.values())
       .map((stats) => ({
         address: stats.address,
-        totalTokens: stats.totalTokens,
-        totalEarnedETH: parseFloat((Number(stats.totalEarnedWei) / 1e18).toFixed(6)),
-        currentBalanceETH: parseFloat((Number(stats.currentBalanceWei) / 1e18).toFixed(6)),
+        ensName: stats.ensName,
+        totalGasbackEarnedETH: Number(formatEther(stats.totalGasbackEarnedWei)),
+        currentBalanceETH: Number(formatEther(stats.currentBalanceWei)),
         registeredContracts: stats.registeredContracts,
       }))
-      .sort((a, b) => b.totalEarnedETH - a.totalEarnedETH)
+      .sort((a, b) => b.totalGasbackEarnedETH - a.totalGasbackEarnedETH)
       .slice(0, 15);
 
     result.totalCreatorsAnalyzed = creatorStats.size;

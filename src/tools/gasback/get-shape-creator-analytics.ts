@@ -1,9 +1,9 @@
-import { Address, getContract } from 'viem';
+import { Address, formatEther, getContract } from 'viem';
 import { type InferSchema } from 'xmcp';
 import { z } from 'zod';
 import { abi as gasbackAbi } from '../../abi/gasback';
 import { addresses } from '../../addresses';
-import { rpcClient } from '../../clients';
+import { mainnetRpcClient, rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../../types';
 
@@ -41,14 +41,16 @@ export default async function getShapeCreatorAnalytics({
       creatorAddress as Address,
     ])) as bigint[];
 
+    // Get ENS name
+    const rpc = mainnetRpcClient();
+    const ensName = await rpc.getEnsName({ address: creatorAddress as Address });
+
     const analytics: ShapeCreatorAnalyticsOutput = {
-      creatorAddress,
+      address: creatorAddress,
+      ensName,
       timestamp: new Date().toISOString(),
-      hasTokens: ownedTokens.length > 0,
-      totalTokens: ownedTokens.length,
-      totalEarnedETH: 0,
+      totalGasbackEarnedETH: 0,
       currentBalanceETH: 0,
-      totalWithdrawnETH: 0,
       registeredContracts: 0,
     };
 
@@ -63,8 +65,8 @@ export default async function getShapeCreatorAnalytics({
       };
     }
 
-    let totalGasbackEarned = 0;
-    let totalCurrentBalance = 0;
+    let totalGasbackEarned = BigInt(0);
+    let totalCurrentBalance = BigInt(0);
     let totalRegisteredContracts = 0;
 
     for (const tokenId of ownedTokens) {
@@ -74,16 +76,13 @@ export default async function getShapeCreatorAnalytics({
         gasbackContract.read.getTokenRegisteredContracts([tokenId]) as Promise<string[]>,
       ]);
 
-      totalGasbackEarned += Number(totalGasback);
-      totalCurrentBalance += Number(currentBalance);
+      totalGasbackEarned += totalGasback;
+      totalCurrentBalance += currentBalance;
       totalRegisteredContracts += registeredContracts.length;
     }
 
-    analytics.totalEarnedETH = parseFloat((totalGasbackEarned / 1e18).toFixed(6));
-    analytics.currentBalanceETH = parseFloat((totalCurrentBalance / 1e18).toFixed(6));
-    analytics.totalWithdrawnETH = parseFloat(
-      ((totalGasbackEarned - totalCurrentBalance) / 1e18).toFixed(6)
-    );
+    analytics.totalGasbackEarnedETH = Number(formatEther(totalGasbackEarned));
+    analytics.currentBalanceETH = Number(formatEther(totalCurrentBalance));
     analytics.registeredContracts = totalRegisteredContracts;
 
     return {

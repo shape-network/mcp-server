@@ -24,6 +24,6 @@ export function rpcClient() {
 export function mainnetRpcClient() {
   return createPublicClient({
     chain: mainnet,
-    transport: http(`https://mainnet.g.alchemy.com/v2/${config.alchemyApiKey}`),
+    transport: http(),
   });
 }
