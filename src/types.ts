@@ -32,8 +32,8 @@ export type TopShapeCreatorsOutput = {
   totalCreatorsAnalyzed: number;
   topCreators: Array<{
     address: string;
-    totalTokens: number;
-    totalEarnedETH: number;
+    ensName: string | null;
+    totalGasbackEarnedETH: number;
     currentBalanceETH: number;
     registeredContracts: number;
   }>;
