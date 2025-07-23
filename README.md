@@ -1,15 +1,17 @@
 # Shape MCP Server
 
-Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's [gasback distribution](https://docs.shape.network/gasback), NFT analytics, and blockchain data.
+Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's onchain data: [gasback](https://docs.shape.network/gasback) distribution, collections analytics, stack users & more.
+
+Contributions are welcome!
 
 ## 🚀 Features
 
-- **🏗️ Modular Tool Categories** - Organized by functionality for easy extension
+Organized by functionality for easy extension:
+
 - **💰 Gasback Analytics** - Creator performance, top earners, and reward simulations
 - **🖼️ NFT Ecosystem Analysis** - Collection metrics and ownership tracking
 - **📊 Educational Simulations** - Model potential rewards without transactions
 - **⚡ Network Monitoring** - Real-time Shape network health and gas price tracking
-- **🔗 Event Analysis** - Decode and understand protocol mechanics
 - **🤖 AI Framework Ready** - Built for agent chaining and workflow automation
 
 ## 🛠 Available Tools
@@ -171,7 +173,7 @@ src/
 
 ## 🔧 Adding New Tools
 
-1. Create a new `.ts` file in the appropriate category folder (`/tools/stack/`, `/tools/nft/`, `/tools/gasback/`)
+1. Create a new `.ts` file in the appropriate category folder (`/tools/stack/`, `/tools/nft/`, `/tools/gasback/`, etc)
 2. Export a Zod `schema` for parameters
 3. Export `metadata` with comprehensive annotations for AI frameworks
 4. Export default function with tool logic
@@ -214,8 +216,7 @@ export default async function myTool({ address }: InferSchema<typeof schema>) {
 ## 🌐 Resources
 
 - [Shape Docs](https://docs.shape.network/)
-- [Shape Gasback](https://docs.shape.network/gasback)
-- [XMCP Framework](https://xmcp.dev/docs)
+- [xmcp Framework](https://xmcp.dev/docs)
 - [Alchemy API Documentation](https://docs.alchemy.com/)
 
 ## ❓ Questions or Support
@@ -225,6 +226,4 @@ export default async function myTool({ address }: InferSchema<typeof schema>) {
 
 ---
 
-## 📄 License
-
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](./LICENSE) for details.
