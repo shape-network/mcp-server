@@ -127,34 +127,6 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
       }
     }
 
-    const totalSupply = (await stackContract.read.totalSupply()) as bigint;
-    const totalStackHolders = Number(totalSupply);
-
-    let rank = 1;
-    const userTotalMedals = medals.length;
-
-    for (let i = 1; i <= totalStackHolders; i++) {
-      try {
-        const currentStackId = BigInt(i);
-        const currentStackMedals = (await stackContract.read.getStackMedals([
-          currentStackId,
-        ])) as Array<{
-          stackOwner: string;
-          stackId: bigint;
-          medalUID: string;
-          medalTier: number;
-          medalData: string;
-          timestamp: bigint;
-        }>;
-
-        if (currentStackMedals.length > userTotalMedals) {
-          rank++;
-        }
-      } catch (error) {
-        continue;
-      }
-    }
-
     const result: StackAchievementsOutput = {
       userAddress: resolvedAddress,
       timestamp: new Date().toISOString(),

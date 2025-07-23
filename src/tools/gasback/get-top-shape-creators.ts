@@ -1,5 +1,4 @@
 import { Address, getContract } from 'viem';
-import { type InferSchema } from 'xmcp';
 import { abi as gasbackAbi } from '../../abi/gasback';
 import { addresses } from '../../addresses';
 import { rpcClient } from '../../clients';
@@ -20,7 +19,7 @@ export const metadata = {
   },
 };
 
-export default async function getTopShapeCreators({}: InferSchema<typeof schema>) {
+export default async function getTopShapeCreators() {
   try {
     const gasbackContract = getContract({
       address: addresses.gasback[config.chainId],
@@ -48,7 +47,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
       };
     }
 
-    const ownerCalls: any[] = [];
+    const ownerCalls = [];
     for (let tokenId = 1; tokenId <= totalTokens; tokenId++) {
       ownerCalls.push({
         address: addresses.gasback[config.chainId] as Address,
@@ -59,7 +58,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
     }
 
     const batchSize = 100;
-    const ownerResults: any[] = [];
+    const ownerResults = [];
 
     for (let i = 0; i < ownerCalls.length; i += batchSize) {
       const batch = ownerCalls.slice(i, i + batchSize);
@@ -70,6 +69,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
         });
         ownerResults.push(...batchResults);
       } catch (error) {
+        console.error(error);
         ownerResults.push(...new Array(batch.length).fill({ status: 'failure' }));
       }
     }
@@ -92,7 +92,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
       };
     }
 
-    const analyticsCalls: any[] = [];
+    const analyticsCalls = [];
     for (const tokenId of tokenOwners.keys()) {
       analyticsCalls.push(
         {
@@ -116,7 +116,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
       );
     }
 
-    const analyticsResults: any[] = [];
+    const analyticsResults = [];
     for (let i = 0; i < analyticsCalls.length; i += batchSize) {
       const batch = analyticsCalls.slice(i, i + batchSize);
       try {
@@ -126,6 +126,7 @@ export default async function getTopShapeCreators({}: InferSchema<typeof schema>
         });
         analyticsResults.push(...batchResults);
       } catch (error) {
+        console.error(error);
         analyticsResults.push(...new Array(batch.length).fill({ status: 'failure' }));
       }
     }

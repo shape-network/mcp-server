@@ -93,7 +93,6 @@ export type ChainStatusOutput = {
   chainId: number;
   rpcHealthy: boolean;
   gasPrice: {
-    wei: string;
     gwei: string;
     eth: string;
   } | null;
