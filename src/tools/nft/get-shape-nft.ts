@@ -1,11 +1,17 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
+import { Address, isAddress } from 'viem';
 import { NftFilters, NftOrdering, OwnedNftsResponse } from 'alchemy-sdk';
 import { alchemy } from '../../clients';
 import type { ShapeNftOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  address: z.string().describe('The wallet address to get NFTs for'),
+  address: z
+    .string()
+    .refine((address) => isAddress(address), {
+      message: 'Invalid address',
+    })
+    .describe('The wallet address to get NFTs for'),
 };
 
 export const metadata = {
@@ -39,7 +45,7 @@ export default async function getShapeNft({ address }: InferSchema<typeof schema
       totalNfts: nftsResponse.totalCount || nftsResponse.ownedNfts.length,
       nfts: nftsResponse.ownedNfts.map((nft) => ({
         tokenId: nft.tokenId,
-        contractAddress: nft.contract.address,
+        contractAddress: nft.contract.address as Address,
         name: nft.name || null,
         imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
       })),

@@ -50,7 +50,7 @@ export default async function getTopShapeCreators() {
     const ownerCalls = [];
     for (let tokenId = 1; tokenId <= totalTokens; tokenId++) {
       ownerCalls.push({
-        address: addresses.gasback[config.chainId] as Address,
+        address: addresses.gasback[config.chainId],
         abi: gasbackAbi,
         functionName: 'ownerOf' as const,
         args: [BigInt(tokenId)],
@@ -77,7 +77,7 @@ export default async function getTopShapeCreators() {
     const tokenOwners = new Map<number, Address>();
     ownerResults.forEach((result, index) => {
       if (result.status === 'success' && result.result) {
-        tokenOwners.set(index + 1, result.result as Address);
+        tokenOwners.set(index + 1, result.result);
       }
     });
 
@@ -96,19 +96,19 @@ export default async function getTopShapeCreators() {
     for (const tokenId of tokenOwners.keys()) {
       analyticsCalls.push(
         {
-          address: addresses.gasback[config.chainId] as Address,
+          address: addresses.gasback[config.chainId],
           abi: gasbackAbi,
           functionName: 'getTokenTotalGasback' as const,
           args: [BigInt(tokenId)],
         },
         {
-          address: addresses.gasback[config.chainId] as Address,
+          address: addresses.gasback[config.chainId],
           abi: gasbackAbi,
           functionName: 'getTokenGasbackBalance' as const,
           args: [BigInt(tokenId)],
         },
         {
-          address: addresses.gasback[config.chainId] as Address,
+          address: addresses.gasback[config.chainId],
           abi: gasbackAbi,
           functionName: 'getTokenRegisteredContracts' as const,
           args: [BigInt(tokenId)],
@@ -134,9 +134,8 @@ export default async function getTopShapeCreators() {
     const creatorStats = new Map<
       string,
       {
-        address: string;
+        address: Address;
         ensName: string | null;
-        totalTokens: number;
         totalGasbackEarnedWei: bigint;
         currentBalanceWei: bigint;
         registeredContracts: number;
@@ -163,7 +162,6 @@ export default async function getTopShapeCreators() {
           creatorStats.set(owner, {
             address: owner,
             ensName: ens,
-            totalTokens: 0,
             totalGasbackEarnedWei: BigInt(0),
             currentBalanceWei: BigInt(0),
             registeredContracts: 0,
@@ -171,7 +169,6 @@ export default async function getTopShapeCreators() {
         }
 
         const stats = creatorStats.get(owner)!;
-        stats.totalTokens += 1;
         stats.totalGasbackEarnedWei += totalGasbackResult.result as bigint;
         stats.currentBalanceWei += currentBalanceResult.result as bigint;
         stats.registeredContracts += (registeredContractsResult.result as string[]).length;

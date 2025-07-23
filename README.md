@@ -139,12 +139,6 @@ Show me recent Gasback distribution events and explain what they mean
 Analyze NFT collection 0x5678..., check if the owner has Gasback NFTs, and simulate potential rewards
 ```
 
-## 🏗 Building for Production
-
-```bash
-yarn build
-```
-
 ## 📁 Project Structure
 
 ```

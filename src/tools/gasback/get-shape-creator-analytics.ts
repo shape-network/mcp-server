@@ -1,4 +1,4 @@
-import { Address, formatEther, getContract } from 'viem';
+import { formatEther, getContract, isAddress } from 'viem';
 import { type InferSchema } from 'xmcp';
 import { z } from 'zod';
 import { abi as gasbackAbi } from '../../abi/gasback';
@@ -8,7 +8,12 @@ import { config } from '../../config';
 import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  creatorAddress: z.string().describe('The creator/owner address to analyze gasback data for'),
+  creatorAddress: z
+    .string()
+    .refine((address) => isAddress(address), {
+      message: 'Invalid address',
+    })
+    .describe('The creator/owner address to analyze gasback data for'),
 };
 
 export const metadata = {
@@ -37,13 +42,10 @@ export default async function getShapeCreatorAnalytics({
       client: rpcClient(),
     });
 
-    const ownedTokens = (await gasbackContract.read.getOwnedTokens([
-      creatorAddress as Address,
-    ])) as bigint[];
+    const ownedTokens = (await gasbackContract.read.getOwnedTokens([creatorAddress])) as bigint[];
 
-    // Get ENS name
     const rpc = mainnetRpcClient();
-    const ensName = await rpc.getEnsName({ address: creatorAddress as Address });
+    const ensName = await rpc.getEnsName({ address: creatorAddress });
 
     const analytics: ShapeCreatorAnalyticsOutput = {
       address: creatorAddress,
@@ -99,7 +101,7 @@ export default async function getShapeCreatorAnalytics({
       message: `Error analyzing creator gasback data: ${
         error instanceof Error ? error.message : 'Unknown error occurred'
       }`,
-      creatorAddress,
+      creatorAddress: creatorAddress,
       timestamp: new Date().toISOString(),
     };
 

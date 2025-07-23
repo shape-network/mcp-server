@@ -1,10 +1,16 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
+import { isAddress } from 'viem';
 import { alchemy } from '../../clients';
 import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../../types';
 
 export const schema = {
-  contractAddress: z.string().describe('The NFT collection contract address to analyze'),
+  contractAddress: z
+    .string()
+    .refine((address) => isAddress(address), {
+      message: 'Invalid address',
+    })
+    .describe('The NFT collection contract address to analyze'),
 };
 
 export const metadata = {
