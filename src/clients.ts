@@ -1,6 +1,7 @@
 import { Alchemy, Network } from 'alchemy-sdk';
 import { createPublicClient, http } from 'viem';
 import { mainnet, shape, shapeSepolia } from 'viem/chains';
+import { Redis } from 'ioredis';
 import { config } from './config';
 
 export const alchemy = new Alchemy({
@@ -27,3 +28,9 @@ export function mainnetRpcClient() {
     transport: http(),
   });
 }
+
+export const redis = new Redis(config.redisUrl, {
+  maxRetriesPerRequest: 20,
+  keepAlive: 3000,
+  lazyConnect: true,
+});
