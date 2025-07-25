@@ -1,10 +1,8 @@
 import { type Middleware } from 'xmcp';
 
 const middleware: Middleware = async (req, res, next) => {
-  // const authHeader = req.headers.authorization;
-
-  // TODO: add auth checks, rate limiting, etc.
-  // if (!customHeaderValidation(authHeader)) {
+  // Add auth checks, rate limiting, etc.
+  // if (!customHeaderValidation(req.headers.authorization)) {
   //   res.status(401).json({ error: "Invalid API key" });
   //   return;
   // }
