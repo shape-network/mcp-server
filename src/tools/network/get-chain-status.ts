@@ -2,6 +2,7 @@ import { formatEther, formatGwei } from 'viem';
 import { rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { ChainStatusOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {};
 
@@ -17,10 +18,18 @@ export const metadata = {
     requiresWallet: false,
     category: 'monitoring',
     educationalHint: true,
+    cacheTTL: 60 * 1, // 1 minute
   },
 };
 
 export default async function getChainStatus() {
+  const cacheKey = `mcp:chainStatus:${config.chainId}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const client = rpcClient();
 
@@ -34,57 +43,42 @@ export default async function getChainStatus() {
     };
 
     try {
-      const [latestBlock, gasPrice] = await Promise.allSettled([
+      const [latestBlock, gasPrice] = await Promise.all([
         client.getBlock({ blockTag: 'latest' }),
         client.getGasPrice(),
-        client.getBlockNumber(),
       ]);
 
-      result.rpcHealthy = latestBlock.status === 'fulfilled';
+      result.rpcHealthy = !!latestBlock;
 
-      if (latestBlock.status === 'fulfilled') {
-        const block = latestBlock.value;
+      if (latestBlock) {
+        const recentBlocks = await Promise.all([
+          client.getBlock({ blockNumber: latestBlock.number - BigInt(1) }),
+          client.getBlock({ blockNumber: latestBlock.number - BigInt(2) }),
+          client.getBlock({ blockNumber: latestBlock.number - BigInt(3) }),
+        ]);
 
-        try {
-          const recentBlocks = await Promise.allSettled([
-            client.getBlock({ blockNumber: block.number - BigInt(1) }),
-            client.getBlock({ blockNumber: block.number - BigInt(2) }),
-            client.getBlock({ blockNumber: block.number - BigInt(3) }),
-          ]);
-
-          const validBlocks = recentBlocks
-            .filter((b) => b.status === 'fulfilled')
-            .map((b) => (b.status === 'fulfilled' ? b.value : null))
-            .filter(Boolean);
-
-          if (validBlocks.length >= 2) {
-            const timeDiffs = [];
-            for (let i = 0; i < validBlocks.length - 1; i++) {
-              timeDiffs.push(
-                Number(validBlocks[i]!.timestamp) - Number(validBlocks[i + 1]!.timestamp)
-              );
-            }
-            result.avgBlockTime = timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
+        const validBlocks = recentBlocks.filter(Boolean);
+        if (validBlocks.length >= 2) {
+          const timeDiffs = [];
+          for (let i = 0; i < validBlocks.length - 1; i++) {
+            timeDiffs.push(Number(validBlocks[i].timestamp) - Number(validBlocks[i + 1].timestamp));
           }
-        } catch (error) {
-          console.error(error);
+          result.avgBlockTime = timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
         }
       }
 
-      if (gasPrice.status === 'fulfilled') {
-        const gasPriceWei = gasPrice.value;
-
+      if (gasPrice) {
         result.gasPrice = {
-          gwei: formatGwei(gasPriceWei),
-          eth: formatEther(gasPriceWei),
+          gwei: formatGwei(gasPrice),
+          eth: formatEther(gasPrice),
         };
       }
     } catch (error) {
-      console.error(error);
+      console.error('Chain status fetch error:', error);
       result.rpcHealthy = false;
     }
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -92,6 +86,10 @@ export default async function getChainStatus() {
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,
