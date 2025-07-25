@@ -13,9 +13,13 @@ export function rpcClient() {
   const chain = config.chainId === shape.id ? shape : shapeSepolia;
   const rootUrl = chain.id === shape.id ? 'shape-mainnet' : 'shape-sepolia';
 
+  const rpcUrl = config.alchemyApiKey
+    ? `https://${rootUrl}.g.alchemy.com/v2/${config.alchemyApiKey}`
+    : config.defaultRpcUrl;
+
   return createPublicClient({
     chain,
-    transport: http(`https://${rootUrl}.g.alchemy.com/v2/${config.alchemyApiKey}`),
+    transport: http(rpcUrl),
     batch: {
       multicall: true,
     },

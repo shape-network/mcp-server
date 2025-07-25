@@ -186,6 +186,23 @@ export default async function myTool({ address }: InferSchema<typeof schema>) {
 
 Redis cuts RPC load for repeat calls. Set `REDIS_URL` to your instance (Vercel KV or Upstash). Skip it? Tools run direct, no sweat. See `cache.ts` for the simple get/set logic.
 
+## Deploy Your Own
+
+Fork this repo and deploy your personal MCP:
+
+1. [Fork on GitHub](https://github.com/shape-network/mcp-server/fork)
+2. Import to Vercel: [New Project](https://vercel.com/new)
+3. Set env vars: `SHAPE_RPC_URL` (your node), `ALCHEMY_API_KEY`, `CHAIN_ID` (`360` for mainnet, or `11011` for testnet), optional `REDIS_URL`
+4. Deploy—access at your-vercel-url/mcp!
+
+## RPC Setup
+
+Use your own Alchemy API key to avoid public RPC limits. Default falls back to Shape’s public node `https://mainnet.shape.network` and `https://sepolia.shape.network`.
+
+## Optional Rate Limiting
+
+Add `middleware.ts` with express-rate-limit to cap usage (e.g., 100 reqs/min). Install: `npm i express-rate-limit`. Enable in `server.ts` if needed.
+
 ## 🌐 Resources
 
 - [Shape Docs](https://docs.shape.network/)
