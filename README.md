@@ -13,6 +13,7 @@ Organized by functionality for easy extension:
 - **📊 Educational Simulations** - Model potential rewards without transactions
 - **⚡ Network Monitoring** - Real-time Shape network health and gas price tracking
 - **🤖 AI Framework Ready** - Built for agent chaining and workflow automation
+- **⚡ Caching** - Optional Redis-based caching for faster responses and less load on the RPC
 
 ## 🛠 Available Tools
 
@@ -60,6 +61,7 @@ Get Stack achievement analytics for users including medal counts by tier (bronze
 
 - An [Alchemy API key](https://dashboard.alchemy.com/)
 - MCP-compatible client (Cursor IDE, Claude Desktop, or AI agent framework)
+- **Optional**: Redis instance for performance caching (recommended for production)
 
 ## 🔧 Setup
 
@@ -75,6 +77,11 @@ ALCHEMY_API_KEY=your_alchemy_api_key_here
 CHAIN_ID=360  # Shape Mainnet
 # OR
 # CHAIN_ID=11011  # Shape Sepolia Testnet
+
+# Optional: Local Redis Configuration (install and run locally)
+REDIS_URL=redis://localhost:6379
+# OR for Redis Cloud/Upstash (recommended for production)
+# REDIS_URL=redis://username:password@host:port
 ```
 
 ### 2. Install Dependencies
