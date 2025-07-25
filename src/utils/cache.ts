@@ -15,6 +15,7 @@ export const CACHE_TTL = 60 * 1;
 export async function getCached(key: string): Promise<string | null> {
   if (!redis) return null; // Skip if no Redis configured
   try {
+    console.log('Getting cached value for key:', key);
     return await redis.get(key);
   } catch (err) {
     console.warn('Redis get failed:', err);
@@ -35,6 +36,7 @@ export async function setCached(
 ): Promise<void> {
   if (!redis) return; // Skip caching if no Redis configured
   try {
+    console.log('Setting cached value for key:', key);
     await redis.setex(key, ttl, value);
   } catch (err) {
     console.warn('Redis set failed:', err);
