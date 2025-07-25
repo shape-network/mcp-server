@@ -2,86 +2,74 @@
 
 Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's onchain data: [gasback](https://docs.shape.network/gasback) distribution, collections analytics, stack users & more.
 
-Contributions are welcome!
+Contributions are welcome! Fork and add your own tool, feel free to submit a PR.
 
 ## 🚀 Features
 
 Organized by functionality for easy extension:
 
-- **💰 Gasback Analytics** - Creator performance, top earners, and reward simulations
-- **🖼️ NFT Ecosystem Analysis** - Collection metrics and ownership tracking
-- **📊 Educational Simulations** - Model potential rewards without transactions
-- **⚡ Network Monitoring** - Real-time Shape network health and gas price tracking
-- **🤖 AI Framework Ready** - Built for agent chaining and workflow automation
-- **⚡ Caching** - Optional Redis-based caching for faster responses and less load on the RPC
+- **💰 Gasback Analytics** - Track creator earnings, top performers, and simulate rewards
+- **🖼️ NFT Ecosystem Analysis** - Dive into collections and ownership patterns
+- **🏗️ Stack Achievements** - Monitor user progress in Shape's ecosystem
+- **⚡ Network Monitoring** - Keep tabs on chain health and metrics
+- **🤖 AI Framework Ready** - Tools optimized for agent chaining and automation
+- **⚡ Caching** - Optional Redis for snappier responses & less load on RPCs, no lock-in required
 
 ## 🛠 Available Tools
 
-### 🏗️ Network Tools (`/tools/stack/`)
+### 🏗️ Network Tools (`/tools/network/`)
 
 #### `getChainStatus`
 
-Monitor Shape network health, gas prices, latest block info, and average block times. Perfect for AI agents needing network context.
-
-#### `decodeGasbackEvents`
-
-Analyze Gasback contract events with detailed decoding and educational descriptions. Helps understand protocol mechanics through event logs.
+Monitor Shape's network: RPC health, gas prices, block times. Use case: Agents checking if the chain's ready for mints. Example prompt: "is shape up? what's the gas like?"
 
 ### 🖼️ NFT Tools (`/tools/nft/`)
 
 #### `getCollectionAnalytics`
 
-Get comprehensive NFT collection analytics including name, symbol, total supply, owner count, token standard, sample NFTs, and **marketplace floor prices from OpenSea**. Optimized with parallel API calls for better performance.
+Collection stats: supply, owners, samples, even OpenSea floors. Use case: Spot hot drops. Example prompt: "what's the vibe on collection 0x567...abc? floor price and top holders?"
 
 #### `getShapeNft`
 
-Get NFTs owned by a specific address on Shape network with detailed metadata.
+List NFTs for an address with metadata. Example prompt: "what NFTs does 0xabcd...123 hold on shape?"
 
 ### 💰 Gasback Tools (`/tools/gasback/`)
 
 #### `getShapeCreatorAnalytics`
 
-Deep dive into creator Gasback performance with earnings, token count, balance, withdrawals, and registered contracts.
+Creator deep dive: earnings, tokens, withdrawals. Use case: Performance reviews. Example prompt: "how's creator 0xdef...766 doing on gasback?"
 
 #### `getTopShapeCreators`
 
-Discover the **top creators** by Gasback earnings with comprehensive stats. Uses efficient multicall batching for 100x performance improvement. Limit is fixed at 25 for optimal performance.
+Top earners with stats (multicall-optimized for speed). Use case: Leaderboards. Example prompt: "who are shape's top 10 gasback earners?"
 
 #### `simulateGasbackRewards`
 
-Educational simulation tool for modeling potential Gasback rewards based on contract usage patterns. Includes daily breakdowns, assumptions, and disclaimers.
+Model rewards based on tx patterns. Use case: "What if" planning. Example prompt: "simulate 50 txs/day at 50k gas—earnings over 3 months?"
 
 ### 🏗️ Stack Tools (`/tools/stack/`)
 
 #### `getStackAchievements`
 
-Get Stack achievement analytics for users including medal counts by tier (bronze, silver, gold, special), total achievements, and last medal claimed. Tracks dynamic NFT achievements for Shape contributions.
+User medals by tier, total count. Use case: Progress tracking. Example prompt: "what's 0xghi...123's stack status? gold medals?"
 
 ## 📋 Prerequisites
 
-- An [Alchemy API key](https://dashboard.alchemy.com/)
-- MCP-compatible client (Cursor IDE, Claude Desktop, or AI agent framework)
-- **Optional**: Redis instance for performance caching (recommended for production)
+- Alchemy API key for NFT queries (get one [here](https://dashboard.alchemy.com/))
+- MCP client like Cursor IDE, Claude Desktop or your AI client of choice
+- Optional: Redis for caching (speeds up RPC-heavy tools)
 
 ## 🔧 Setup
 
 ### 1. Environment Configuration
 
-Create a `.env` file in the project root:
+Copy `.env.example` to `.env` and fill in:
 
 ```bash
-# Required
-ALCHEMY_API_KEY=your_alchemy_api_key_here
-
-# Network Configuration
-CHAIN_ID=360  # Shape Mainnet
-# OR
-# CHAIN_ID=11011  # Shape Sepolia Testnet
-
-# Optional: Local Redis Configuration (install and run locally)
-REDIS_URL=redis://localhost:6379
-# OR for Redis Cloud/Upstash (recommended for production)
-# REDIS_URL=redis://username:password@host:port
+ALCHEMY_API_KEY=your_key_here
+CHAIN_ID=360  # Mainnet; use 11011 for Sepolia
+# Optional caching
+REDIS_URL=redis://localhost:6379  # Local, or Upstash for prod
 ```
 
 ### 2. Install Dependencies
@@ -90,13 +78,18 @@ REDIS_URL=redis://localhost:6379
 yarn install
 ```
 
-### 3. Development Server
+### 3. Run Locally
 
 ```bash
 yarn dev
 ```
 
-This starts the MCP server on `http://localhost:3002/mcp`
+Server is now running at http://localhost:3002/mcp
+
+### 4. Deploy
+
+- **Vercel**: `vercel deploy`. Enable KV in dashboard for caching.
+- **Alternatives**: Docker build (`docker build -t shape-mcp .; docker run -p 3002:3002 shape-mcp`), or any Node host. Skip Vercel KV by setting `REDIS_URL` to your own instance.
 
 ## 🔌 Client Integration
 
@@ -118,113 +111,91 @@ Add to your MCP settings in Cursor for eg:
 
 ### Basic Analysis
 
-```
-Analyze creator 0xabcd... performance and compare with top creators
-```
+"analyze creator 0xabcd...123's Gasback and compare to top earners. any tips?"
 
-### Network Monitoring
+### Network Check
 
-```
-What's the current Shape network status and gas prices?
-```
+"current shape status? gas prices looking mint-friendly?"
 
-### Educational Simulation
+### Gasback Earning Simulation
 
-```
-Simulate potential Gasback rewards for contract 0x1234... with 50 transactions per day over 3 months
-```
+"simulate gasback earnings for a contract with 100 txs/day for 6 months straight. wen lambo?"
 
-### Event Investigation
+### Full Chain
 
-```
-Show me recent Gasback distribution events and explain what they mean
-```
-
-### Comprehensive Workflow
-
-```
-Analyze NFT collection 0x5678..., check if the owner has Gasback NFTs, and simulate potential rewards
-```
+"grab NFTs from 0x567...abc, check owner's stack, simulate their gasback potential."
 
 ## 📁 Project Structure
 
 ```
 src/
-├── tools/                   # Modular tool categories
-│   ├── stack/              # Network & protocol tools
-│   │   ├── get-chain-status.ts
-│   │   └── decode-gasback-events.ts
-│   ├── nft/                # NFT analysis tools
-│   │   ├── get-collection-analytics.ts
-│   │   └── get-shape-nft.ts
-│   └── gasback/            # Gasback & creator tools
-│       ├── get-shape-creator-analytics.ts
-│       ├── get-top-shape-creators.ts
-│       └── simulate-gasback-rewards.ts
-├── abi/                    # Contract ABIs
-│   └── gasback.ts         # Shape gasback contract ABI
-│   └── stack.ts           # Shape stack contract ABI
-├── addresses.ts            # Contract addresses
-├── clients.ts              # Blockchain clients (RPC + Alchemy)
-├── config.ts               # Configuration management
-├── middleware.ts           # Request middleware
-├── types.ts                # TypeScript type definitions
-└── xmcp.config.ts         # XMCP configuration
+├── tools/                  # Modular tools
+│   ├── gasback/            # Earnings and creator focus
+│   ├── network/            # Chain health tools
+│   ├── nft/                # Collection/ownership analysis
+│   └── stack/              # Achievement tracking
+├── abi/                    # Contract interfaces
+├── utils/                  # Helpers like cache.ts
+├── addresses.ts            # Key contracts addys
+├── clients.ts              # RPC/Alchemy/Redis
+├── config.ts               # Env-based setup
+├── middleware.ts           # Auth/logging if needed
+├── types.ts                # Shared outputs
+└── xmcp.config.ts          # xmcp server config
 ```
+
+Why this way? Categories keep things modular. Add a tool to /tools/gasback/ and xmcp auto-picks it up. No monolith mess.
 
 ## 🔧 Adding New Tools
 
-1. Create a new `.ts` file in the appropriate category folder (`/tools/stack/`, `/tools/nft/`, `/tools/gasback/`, etc)
-2. Export a Zod `schema` for parameters
-3. Export `metadata` with comprehensive annotations for AI frameworks
-4. Export default function with tool logic
+1. Pick a category folder (e.g., /tools/gasback/)
+2. New .ts file with schema, metadata, function
+3. Example:
 
-```typescript
+```ts
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 
 export const schema = {
-  address: z.string().describe('Wallet address to analyze'),
+  address: z.string().describe('Wallet to analyze'),
 };
 
 export const metadata = {
   name: 'myTool',
-  description: 'My custom tool for AI agents',
+  description: 'Custom tool for fun insights',
   annotations: {
     title: 'My Tool',
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
     requiresWallet: false,
-    category: 'myToolCategory',
-    chainableWith: ['otherTool1', 'otherTool2'],
+    category: 'gasback',
+    chainableWith: ['getShapeCreatorAnalytics'],
   },
 };
 
 export default async function myTool({ address }: InferSchema<typeof schema>) {
-  // Tool implementation with structured output
+  // Logic here
   return {
-    content: [
-      {
-        type: 'text',
-        text: JSON.stringify(result, null, 2),
-      },
-    ],
+    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
   };
 }
 ```
+
+## ⚡ Caching (Optional)
+
+Redis cuts RPC load for repeat calls. Set `REDIS_URL` to your instance (Vercel KV or Upstash). Skip it? Tools run direct, no sweat. See `cache.ts` for the simple get/set logic.
 
 ## 🌐 Resources
 
 - [Shape Docs](https://docs.shape.network/)
 - [xmcp Framework](https://xmcp.dev/docs)
-- [Alchemy API Documentation](https://docs.alchemy.com/)
+- [Alchemy Docs](https://docs.alchemy.com/)
 
-## ❓ Questions or Support
+## ❓ Support
 
-- Ping or DM [@williamhzo](https://x.com/williamhzo) on Twitter/X
-- [Shape Discord](https://discord.com/invite/shape-l2)
+Contact [@williamhzo](https://x.com/williamhzo) or hop into [Shape Discord](https://discord.com/invite/shape-l2).
 
----
+MIT License—see [LICENSE](./LICENSE).
 
-MIT License - see [LICENSE](./LICENSE) for details.
+![GitHub stars](https://img.shields.io/github/stars/shape-network/mcp-server) ![GitHub forks](https://img.shields.io/github/forks/shape-network/mcp-server)
