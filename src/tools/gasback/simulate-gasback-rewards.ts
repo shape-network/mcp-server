@@ -2,7 +2,9 @@ import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { isAddress } from 'viem';
 import { rpcClient } from '../../clients';
+import { config } from '../../config';
 import type { GasbackSimulationOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
   contractAddress: z
@@ -28,6 +30,7 @@ export const metadata = {
     category: 'gasback-analysis',
     educationalHint: true,
     chainableWith: ['getShapeCreatorAnalytics', 'getTopShapeCreators'],
+    cacheTTL: 60 * 2, // 2 minutes
   },
 };
 
@@ -36,6 +39,13 @@ export default async function simulateGasbackEarnings({
   hypotheticalTxs,
   avgGasPerTx,
 }: InferSchema<typeof schema>) {
+  const cacheKey = `mcp:gasbackSimulation:${config.chainId}:${contractAddress.toLowerCase()}:${hypotheticalTxs}:${avgGasPerTx}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const rpc = rpcClient();
     const currentGasPrice = await rpc.getGasPrice();
@@ -55,7 +65,7 @@ export default async function simulateGasbackEarnings({
       estimatedEarningsETH: parseFloat(estimatedEarningsETH.toFixed(6)),
     };
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -63,6 +73,10 @@ export default async function simulateGasbackEarnings({
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,

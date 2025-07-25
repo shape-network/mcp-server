@@ -2,7 +2,9 @@ import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { isAddress } from 'viem';
 import { alchemy } from '../../clients';
+import { config } from '../../config';
 import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
   contractAddress: z
@@ -26,12 +28,20 @@ export const metadata = {
     category: 'nft-analysis',
     educationalHint: true,
     chainableWith: ['getShapeNft', 'simulateGasbackRewards'],
+    cacheTTL: 60 * 15, // 15 minutes
   },
 };
 
 export default async function getCollectionAnalytics({
   contractAddress,
 }: InferSchema<typeof schema>) {
+  const cacheKey = `mcp:collectionAnalytics:${config.chainId}:${contractAddress.toLowerCase()}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const analytics: CollectionAnalyticsOutput = {
       contractAddress,
@@ -78,7 +88,7 @@ export default async function getCollectionAnalytics({
       analytics.floorPrice = floorPriceResult.value;
     }
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -86,6 +96,10 @@ export default async function getCollectionAnalytics({
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,

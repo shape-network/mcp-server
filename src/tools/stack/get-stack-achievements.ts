@@ -6,6 +6,7 @@ import { addresses } from '../../addresses';
 import { mainnetRpcClient, rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { StackAchievementsOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
   userAddress: z
@@ -28,10 +29,18 @@ export const metadata = {
     requiresWallet: false,
     category: 'stack-analysis',
     educationalHint: true,
+    cacheTTL: 60 * 5, // 5 minutes
   },
 };
 
 export default async function getStackAchievements({ userAddress }: InferSchema<typeof schema>) {
+  const cacheKey = `mcp:stackAchievements:${config.chainId}:${userAddress.toLowerCase()}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const stackContract = getContract({
       address: addresses.stack[config.chainId],
@@ -54,7 +63,7 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
           timestamp: new Date().toISOString(),
         };
 
-        return {
+        const response = {
           content: [
             {
               type: 'text',
@@ -62,6 +71,10 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
             },
           ],
         };
+
+        await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+        return response;
       }
       resolvedAddress = ensAddress;
     }
@@ -83,7 +96,7 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
         lastMedalClaimed: null,
       };
 
-      return {
+      const response = {
         content: [
           {
             type: 'text',
@@ -91,6 +104,10 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
           },
         ],
       };
+
+      await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+      return response;
     }
 
     const medals = (await stackContract.read.getStackMedals([stackId])) as Array<{
@@ -146,7 +163,7 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
         : null,
     };
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -154,6 +171,10 @@ export default async function getStackAchievements({ userAddress }: InferSchema<
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,
