@@ -6,6 +6,7 @@ import { addresses } from '../../addresses';
 import { mainnetRpcClient, rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { ShapeCreatorAnalyticsOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
   creatorAddress: z
@@ -29,12 +30,20 @@ export const metadata = {
     category: 'gasback-analysis',
     educationalHint: true,
     chainableWith: ['getTopShapeCreators', 'simulateGasbackRewards'],
+    cacheTTL: 60 * 5, // 5 minutes
   },
 };
 
 export default async function getShapeCreatorAnalytics({
   creatorAddress,
 }: InferSchema<typeof schema>) {
+  const cacheKey = `mcp:shapeCreatorAnalytics:${config.chainId}:${creatorAddress.toLowerCase()}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const gasbackContract = getContract({
       address: addresses.gasback[config.chainId],
@@ -57,7 +66,7 @@ export default async function getShapeCreatorAnalytics({
     };
 
     if (ownedTokens.length === 0) {
-      return {
+      const response = {
         content: [
           {
             type: 'text',
@@ -65,6 +74,10 @@ export default async function getShapeCreatorAnalytics({
           },
         ],
       };
+
+      await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+      return response;
     }
 
     let totalGasbackEarned = BigInt(0);
@@ -87,7 +100,7 @@ export default async function getShapeCreatorAnalytics({
     analytics.currentBalanceETH = Number(formatEther(totalCurrentBalance));
     analytics.registeredContracts = totalRegisteredContracts;
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -95,6 +108,10 @@ export default async function getShapeCreatorAnalytics({
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,

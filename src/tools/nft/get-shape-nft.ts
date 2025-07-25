@@ -3,7 +3,9 @@ import { type InferSchema } from 'xmcp';
 import { Address, isAddress } from 'viem';
 import { NftFilters, NftOrdering, OwnedNftsResponse } from 'alchemy-sdk';
 import { alchemy } from '../../clients';
+import { config } from '../../config';
 import type { ShapeNftOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
   address: z
@@ -27,10 +29,18 @@ export const metadata = {
     category: 'nft-analysis',
     educationalHint: true,
     chainableWith: ['getCollectionAnalytics'],
+    cacheTTL: 60 * 10, // 10 minutes
   },
 };
 
 export default async function getShapeNft({ address }: InferSchema<typeof schema>) {
+  const cacheKey = `mcp:shapeNft:${config.chainId}:${address.toLowerCase()}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const nftsResponse: OwnedNftsResponse = await alchemy.nft.getNftsForOwner(address, {
       pageSize: 25,
@@ -51,7 +61,7 @@ export default async function getShapeNft({ address }: InferSchema<typeof schema
       })),
     };
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -59,6 +69,10 @@ export default async function getShapeNft({ address }: InferSchema<typeof schema
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,

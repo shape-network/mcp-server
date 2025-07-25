@@ -4,6 +4,7 @@ import { addresses } from '../../addresses';
 import { mainnetRpcClient, rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { TopShapeCreatorsOutput, ToolErrorOutput } from '../../types';
+import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {};
 
@@ -16,10 +17,22 @@ export const metadata = {
     readOnlyHint: true,
     destructiveHint: false,
     idempotentHint: true,
+    requiresWallet: false,
+    category: 'gasback-analysis',
+    educationalHint: true,
+    chainableWith: ['getShapeCreatorAnalytics', 'simulateGasbackRewards'],
+    cacheTTL: 60 * 10, // 10 minutes
   },
 };
 
 export default async function getTopShapeCreators() {
+  const cacheKey = `mcp:topShapeCreators:${config.chainId}`;
+  const cached = await getCached(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
   try {
     const gasbackContract = getContract({
       address: addresses.gasback[config.chainId],
@@ -37,7 +50,7 @@ export default async function getTopShapeCreators() {
     };
 
     if (totalTokens === 0) {
-      return {
+      const response = {
         content: [
           {
             type: 'text',
@@ -45,6 +58,10 @@ export default async function getTopShapeCreators() {
           },
         ],
       };
+
+      await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+      return response;
     }
 
     const ownerCalls = [];
@@ -82,7 +99,7 @@ export default async function getTopShapeCreators() {
     });
 
     if (tokenOwners.size === 0) {
-      return {
+      const response = {
         content: [
           {
             type: 'text',
@@ -90,6 +107,10 @@ export default async function getTopShapeCreators() {
           },
         ],
       };
+
+      await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+      return response;
     }
 
     const analyticsCalls = [];
@@ -189,7 +210,7 @@ export default async function getTopShapeCreators() {
     result.totalCreatorsAnalyzed = creatorStats.size;
     result.topCreators = topCreators;
 
-    return {
+    const response = {
       content: [
         {
           type: 'text',
@@ -197,6 +218,10 @@ export default async function getTopShapeCreators() {
         },
       ],
     };
+
+    await setCached(cacheKey, JSON.stringify(response), metadata.annotations.cacheTTL);
+
+    return response;
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,

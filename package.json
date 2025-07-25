@@ -17,12 +17,14 @@
   },
   "dependencies": {
     "alchemy-sdk": "^3.6.1",
+    "ioredis": "^5.6.1",
     "viem": "^2.32.0",
     "xmcp": "latest",
     "zod": "3.24.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
+    "@types/ioredis": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
     "eslint": "^9.31.0",
