@@ -5,3 +5,4 @@ dist
 .xmcp
 xmcp-env.d.ts
 .env
+.claude/settings.local.json
