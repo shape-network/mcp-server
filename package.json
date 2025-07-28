@@ -1,7 +1,25 @@
 {
   "name": "shape-mcp",
   "version": "0.1.0",
-  "description": "An XMCP application with tool syntax",
+  "description": "MCP server for Shape blockchain data - gasback analytics, NFT insights, network monitoring, etc.",
+  "keywords": [
+    "mcp",
+    "shape",
+    "blockchain",
+    "gasback",
+    "nft",
+    "analytics"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shape-network/mcp-server.git"
+  },
+  "homepage": "https://github.com/shape-network/mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/shape-network/mcp-server/issues"
+  },
+  "author": "williamhzo",
+  "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
   },
