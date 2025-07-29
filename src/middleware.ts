@@ -10,6 +10,9 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: {
+    xForwardedForHeader: false, // Disable X-Forwarded-For validation
+  },
 });
 
 const middleware: Middleware = async (req, res, next) => {
