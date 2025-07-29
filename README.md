@@ -53,6 +53,22 @@ Model rewards based on tx patterns. Use case: "What if" planning. Example prompt
 
 User medals by tier, total count. Use case: Progress tracking. Example prompt: "what's 0xghi...123's stack status? gold medals?"
 
+## 🧪 Quick Test (No Setup Required)
+
+Want to try the MCP server without local setup? Point directly to our deployed instance:
+
+```json
+{
+  "mcpServers": {
+    "shape-mcp": {
+      "url": "https://shape-mcp-server.vercel.app/mcp"
+    }
+  }
+}
+```
+
+**Note:** This deployed version may have rate limits and is intended for testing/sandbox use only. For production AI applications, we recommend self-hosting your own instance following the setup instructions above.
+
 ## 📋 Prerequisites
 
 - Alchemy API key for NFT queries (get one [here](https://dashboard.alchemy.com/))
@@ -88,7 +104,7 @@ Server is now running at http://localhost:3002/mcp
 
 ### 4. Deploy
 
-- **Vercel**: `vercel deploy`. Enable KV in dashboard for caching.
+- **Vercel**: `vercel deploy`. Enable KV in dashboard for caching (or your own Redis instance with a provider like Upstash).
 - **Alternatives**: Docker build (`docker build -t shape-mcp .; docker run -p 3002:3002 shape-mcp`), or any Node host. Skip Vercel KV by setting `REDIS_URL` to your own instance.
 
 ## 🔌 Client Integration
