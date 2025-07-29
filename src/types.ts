@@ -86,12 +86,15 @@ export type ChainStatusOutput = {
   timestamp: string;
   network: string;
   chainId: number;
+  mainnetRpcUrl: string;
+  testnetRpcUrl: string;
   rpcHealthy: boolean;
   gasPrice: {
     gwei: string;
     eth: string;
   } | null;
   avgBlockTime: number | null;
+  docs: string;
 };
 
 export type TrendingCollectionsOutput = {

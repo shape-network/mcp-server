@@ -40,6 +40,9 @@ export default async function getChainStatus() {
       rpcHealthy: false,
       gasPrice: null,
       avgBlockTime: null,
+      mainnetRpcUrl: 'https://mainnet.shape.network',
+      testnetRpcUrl: 'https://sepolia.shape.network',
+      docs: 'https://docs.shape.network/',
     };
 
     try {
