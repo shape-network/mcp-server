@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
+import { formatEther } from 'viem';
 import { rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { GasbackSimulationOutput, ToolErrorOutput } from '../../types';
@@ -7,7 +8,10 @@ import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
   hypotheticalTxs: z.number().default(100).describe('Number of hypothetical user transactions'),
-  avgGasPerTx: z.number().default(100000).describe('Average gas used per transaction'),
+  avgGasPerTx: z
+    .number()
+    .default(150000)
+    .describe('Average gas used per transaction (150k=NFT mint/transfer, 250k=complex DeFi)'),
 };
 
 export const metadata = {
@@ -43,10 +47,10 @@ export default async function simulateGasbackEarnings({
     const currentGasPrice = await rpc.getGasPrice();
 
     const totalGasSpent = BigInt(hypotheticalTxs) * BigInt(avgGasPerTx) * currentGasPrice;
-    const rebateRate = 0.8;
+    const rebateRate = 0.8; // 80% rebate rate (dimensionless)
     const estimatedEarningsWei =
-      (totalGasSpent * BigInt(Math.floor(rebateRate * 1e18))) / BigInt(1e18);
-    const estimatedEarningsETH = Number(estimatedEarningsWei) / 1e18;
+      (totalGasSpent * BigInt(Math.floor(rebateRate * 1000))) / BigInt(1000);
+    const estimatedEarningsETH = parseFloat(formatEther(estimatedEarningsWei));
 
     const result: GasbackSimulationOutput = {
       timestamp: new Date().toISOString(),
