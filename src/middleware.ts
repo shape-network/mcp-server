@@ -1,7 +1,7 @@
 import { type Middleware } from 'xmcp';
 import rateLimit from 'express-rate-limit';
 
-// Rate limit deployed version, tweak or remove this with your own self-hosted MCP server.
+// Rate limit deployed version, tweak or remove when self-hosting.
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
