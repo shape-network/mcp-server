@@ -1,18 +1,11 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
-import { isAddress } from 'viem';
 import { rpcClient } from '../../clients';
 import { config } from '../../config';
 import type { GasbackSimulationOutput, ToolErrorOutput } from '../../types';
 import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
-  contractAddress: z
-    .string()
-    .refine((address) => isAddress(address), {
-      message: 'Invalid address',
-    })
-    .describe('The contract address to simulate Gasback for'),
   hypotheticalTxs: z.number().default(100).describe('Number of hypothetical user transactions'),
   avgGasPerTx: z.number().default(100000).describe('Average gas used per transaction'),
 };
@@ -20,7 +13,7 @@ export const schema = {
 export const metadata = {
   name: 'simulateGasbackEarnings',
   description:
-    'Simulate potential Gasback earnings for a creator based on hypothetical user interactions (80% rebate model)',
+    'Simulate potential Gasback earnings for a creator based on hypothetical number of transactions (80% rebate model), and average gas used per transaction.',
   annotations: {
     title: 'Gasback Simulation',
     readOnlyHint: true,
@@ -35,11 +28,10 @@ export const metadata = {
 };
 
 export default async function simulateGasbackEarnings({
-  contractAddress,
   hypotheticalTxs,
   avgGasPerTx,
 }: InferSchema<typeof schema>) {
-  const cacheKey = `mcp:gasbackSimulation:${config.chainId}:${contractAddress.toLowerCase()}:${hypotheticalTxs}:${avgGasPerTx}`;
+  const cacheKey = `mcp:gasbackSimulation:${config.chainId}:${hypotheticalTxs}:${avgGasPerTx}`;
   const cached = await getCached(cacheKey);
 
   if (cached) {
@@ -57,7 +49,6 @@ export default async function simulateGasbackEarnings({
     const estimatedEarningsETH = Number(estimatedEarningsWei) / 1e18;
 
     const result: GasbackSimulationOutput = {
-      contractAddress,
       timestamp: new Date().toISOString(),
       hypotheticalTxs,
       avgGasPerTx,
@@ -83,7 +74,6 @@ export default async function simulateGasbackEarnings({
       message: `Error simulating Gasback: ${
         error instanceof Error ? error.message : 'Unknown error'
       }`,
-      contractAddress,
       timestamp: new Date().toISOString(),
     };
 
