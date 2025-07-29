@@ -58,7 +58,6 @@ export type ToolErrorOutput = {
 };
 
 export type GasbackSimulationOutput = {
-  contractAddress: Address;
   timestamp: string;
   hypotheticalTxs: number;
   avgGasPerTx: number;
