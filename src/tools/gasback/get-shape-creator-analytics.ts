@@ -20,7 +20,7 @@ export const schema = {
 export const metadata = {
   name: 'getShapeCreatorAnalytics',
   description:
-    'Get essential gasback analytics for a Shape creator: token count, earnings, balance, withdrawals, and registered contracts. Ideal for AI agents tracking creator performance.',
+    'Get Shape creator analytics: gasback earnings, balance, withdrawals, tx volume, and registered contracts.',
   annotations: {
     title: 'Shape Creator Gasback Analytics',
     readOnlyHint: true,

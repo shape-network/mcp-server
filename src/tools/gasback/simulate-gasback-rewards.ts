@@ -17,7 +17,7 @@ export const schema = {
 export const metadata = {
   name: 'simulateGasbackEarnings',
   description:
-    'Simulate potential Gasback earnings for a creator based on hypothetical number of transactions (80% rebate model), and average gas used per transaction.',
+    'Simulate potential Gasback earnings for a creator based on hypothetical number of transactions and average gas used per transaction.',
   annotations: {
     title: 'Gasback Simulation',
     readOnlyHint: true,

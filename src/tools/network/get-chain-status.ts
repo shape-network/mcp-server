@@ -9,7 +9,7 @@ export const schema = {};
 export const metadata = {
   name: 'getChainStatus',
   description:
-    'Get Shape network status: RPC health, gas prices, latest block info, and network metrics for monitoring and educational purposes',
+    'Get Shape network status: RPC health & URLs, gas prices, latest block info, network metrics, etc.',
   annotations: {
     title: 'Shape Chain Status',
     readOnlyHint: true,

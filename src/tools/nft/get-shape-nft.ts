@@ -18,8 +18,7 @@ export const schema = {
 
 export const metadata = {
   name: 'getShapeNft',
-  description:
-    'Get essential NFT ownership data for an address: token count and basic NFT information',
+  description: 'Get NFT ownership data for a given address.',
   annotations: {
     title: 'Get Shape NFTs',
     readOnlyHint: true,

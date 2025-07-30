@@ -10,8 +10,7 @@ export const schema = {};
 
 export const metadata = {
   name: 'getTopShapeCreators',
-  description:
-    'Get the top 15 creators on Shape by gasback earnings: token count, total earned, current balance, and registered contracts',
+  description: 'Get Shape top creators by gasback earnings.',
   annotations: {
     title: 'Top 15 Shape Creators by Gasback',
     readOnlyHint: true,

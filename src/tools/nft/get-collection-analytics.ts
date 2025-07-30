@@ -18,7 +18,7 @@ export const schema = {
 export const metadata = {
   name: 'getCollectionAnalytics',
   description:
-    'Get comprehensive NFT collection analytics: name, symbol, total supply, owner count, token standard, sample NFTs, and marketplace floor prices from OpenSea and LooksRare. Perfect for AI agents analyzing NFT ecosystems.',
+    'Get NFT collection analytics: name, symbol, total supply, owner count, sample NFTs, marketplace floor prices, etc.',
   annotations: {
     title: 'NFT Collection Analytics',
     readOnlyHint: true,
