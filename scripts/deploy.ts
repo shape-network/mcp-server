@@ -1,24 +1,24 @@
 import { ethers } from 'hardhat';
 
 async function main() {
-  console.log('🚀 Deploying SVGNFTMinter to Shape Sepolia...');
+  console.log('🚀 Deploying NFTMinter to Shape Sepolia...');
 
   // Get the contract factory
-  const SVGNFTMinter = await ethers.getContractFactory('SVGNFTMinter');
+  const NFTMinter = await ethers.getContractFactory('NFTMinter');
 
   // Deploy the contract
   console.log('📝 Deploying contract...');
-  const svgNFTMinter = await SVGNFTMinter.deploy();
+  const nftMinter = await NFTMinter.deploy();
 
   // Wait for deployment to be mined
-  await svgNFTMinter.waitForDeployment();
+  await nftMinter.waitForDeployment();
 
-  const contractAddress = await svgNFTMinter.getAddress();
+  const contractAddress = await nftMinter.getAddress();
 
-  console.log('✅ SVGNFTMinter deployed to:', contractAddress);
+  console.log('✅ NFTMinter deployed to:', contractAddress);
 
   // Get deployment transaction details
-  const deploymentTx = svgNFTMinter.deploymentTransaction();
+  const deploymentTx = nftMinter.deploymentTransaction();
   if (deploymentTx) {
     console.log('📦 Transaction hash:', deploymentTx.hash);
     console.log('⛽ Gas used:', deploymentTx.gasLimit?.toString());
@@ -26,10 +26,10 @@ async function main() {
 
   // Verify contract info
   console.log('\n📋 Contract Details:');
-  console.log('- Name:', await svgNFTMinter.name());
-  console.log('- Symbol:', await svgNFTMinter.symbol());
-  console.log('- Owner:', await svgNFTMinter.owner());
-  console.log('- Next Token ID:', await svgNFTMinter.getNextTokenId());
+  console.log('- Name:', await nftMinter.name());
+  console.log('- Symbol:', await nftMinter.symbol());
+  console.log('- Owner:', await nftMinter.owner());
+  console.log('- Next Token ID:', await nftMinter.getNextTokenId());
 
   console.log('\n🌐 Explorer Links:');
   console.log('- Contract:', `https://shape-sepolia.blockscout.com/address/${contractAddress}`);
@@ -38,7 +38,7 @@ async function main() {
   }
 
   console.log('\n🔧 Add this to your MCP server config:');
-  console.log(`SVG_NFT_CONTRACT_ADDRESS=${contractAddress}`);
+  console.log(`NFT_CONTRACT_ADDRESS=${contractAddress}`);
 
   return contractAddress;
 }
@@ -47,7 +47,9 @@ async function main() {
 // and properly handle errors.
 main()
   .then((address) => {
-    console.log('\n🎉 Deployment completed successfully!');
+    console.log('🎉 Deployment completed successfully!');
+    console.log('🔧 Add this to your MCP server config:');
+    console.log(`NFT_CONTRACT_ADDRESS=${address}`);
     process.exitCode = 0;
   })
   .catch((error) => {
