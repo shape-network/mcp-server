@@ -126,7 +126,7 @@ Add to your MCP settings in Cursor for eg:
 {
   "mcpServers": {
     "shape-mcp": {
-      "url": "http://localhost:3002/mcp" // run locally
+      "url": "http://localhost:3002/mcp"
     }
   }
 }
