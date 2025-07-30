@@ -1,8 +1,8 @@
 import { HardhatUserConfig } from 'hardhat/config';
-import '@nomicfoundation/hardhat-toolbox';
+import '@nomicfoundation/hardhat-ethers';
 import { shapeSepolia } from 'viem/chains';
 
-const privateKey = process.env.PRIVATE_KEY as string;
+const privateKey = process.env.PRIVATE_KEY;
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
     shapeSepolia: {
       chainId: shapeSepolia.id,
       url: 'https://sepolia.shape.network',
-      accounts: [privateKey],
+      accounts: privateKey ? [privateKey] : [],
     },
   },
 };
