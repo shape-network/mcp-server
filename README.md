@@ -4,7 +4,7 @@ Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.de
 
 Contributions are welcome! Fork and add your own tools, feel free to submit a PR.
 
-## 🚀 Features
+## Features
 
 Organized by functionality for easy extension:
 
@@ -15,9 +15,9 @@ Organized by functionality for easy extension:
 - **AI Ready** - Tools are optimized for agent chaining and automation
 - **Caching** - Optional Redis for snappier responses & less load on RPCs, no lock-in required
 
-## 🛠 Available Tools
+## Available Tools
 
-### 🏗️ Network Tools (`/tools/network/`)
+### Network Tools (`/tools/network/`)
 
 #### `getChainStatus`
 
@@ -25,7 +25,7 @@ Monitor Shape's network: RPC health, gas prices, block times, etc.
 
 Example prompt: "current shape status? gas prices looking mint-friendly?"
 
-### 🖼️ NFT Tools (`/tools/nft/`)
+### NFT Tools (`/tools/nft/`)
 
 #### `getCollectionAnalytics`
 
@@ -39,7 +39,7 @@ List NFTs for an address, with metadata.
 
 Example prompt: "what NFTs does 0xabcd...123 hold on shape?"
 
-### 💰 Gasback Tools (`/tools/gasback/`)
+### Gasback Tools (`/tools/gasback/`)
 
 #### `getShapeCreatorAnalytics`
 
@@ -67,7 +67,7 @@ User medals by tier, total count, etc.
 
 Example prompt: "what's 0xghi...123's stack status? gold medals?"
 
-## 🧪 Quick Test (No Setup Required)
+## Quick Test (No Setup Required)
 
 Want to try the MCP server without local setup? Point directly to our deployed instance:
 
@@ -83,13 +83,13 @@ Want to try the MCP server without local setup? Point directly to our deployed i
 
 **Note:** This deployed version may have rate limits and is intended for testing/sandbox use only. For production AI applications, we recommend self-hosting your own instance following the setup instructions above.
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Alchemy API key for NFT queries (get one [here](https://dashboard.alchemy.com/))
 - MCP client like Cursor IDE, Claude Desktop or your AI client of choice
 - Optional: Redis for caching (speeds up RPC-heavy tools)
 
-## 🔧 Setup
+## Setup
 
 ### 1. Environment Configuration
 
@@ -132,7 +132,7 @@ Add to your MCP settings in Cursor for eg:
 }
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -153,7 +153,7 @@ src/
 
 Categories keep things modular. Add a tool to /tools/gasback/ and xmcp auto-picks it up. No monolith mess.
 
-## 🔧 Adding New Tools
+## Adding New Tools
 
 1. Pick a category folder (e.g., /tools/gasback/)
 2. New .ts file with schema, metadata, function
@@ -189,7 +189,7 @@ export default async function myTool({ address }: InferSchema<typeof schema>) {
 }
 ```
 
-## ⚡ Caching (Optional)
+## Caching (Optional)
 
 Redis cuts RPC load for repeat calls. Set `REDIS_URL` to your instance (Vercel KV or Upstash). Skip it? Tools run direct, no sweat. See `cache.ts` for the simple get/set logic.
 
@@ -206,13 +206,13 @@ Fork this repo and deploy your personal MCP:
 
 Use your own Alchemy API key to avoid public RPC limits. Default falls back to Shape’s public node `https://mainnet.shape.network` and `https://sepolia.shape.network`.
 
-## 🌐 Resources
+## Resources
 
 - [Shape Docs](https://docs.shape.network/)
 - [xmcp Framework](https://xmcp.dev/docs)
 - [Alchemy Docs](https://docs.alchemy.com/)
 
-## ❓ Support
+## Support
 
 Contact [@williamhzo](https://x.com/williamhzo) or hop into [Shape Discord](https://discord.com/invite/shape-l2).
 
