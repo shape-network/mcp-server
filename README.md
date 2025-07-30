@@ -4,6 +4,8 @@ Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.de
 
 Contributions are welcome! Fork and add your own tools, feel free to submit a PR.
 
+Check our docs about how to build AI on Shape: https://docs.shape.network/building-on-shape/ai
+
 ## Features
 
 Organized by functionality for easy extension:
@@ -81,7 +83,7 @@ Want to try the MCP server without local setup? Point directly to our deployed i
 }
 ```
 
-**Note:** This deployed version may have rate limits and is intended for testing/sandbox use only. For production AI applications, we recommend self-hosting your own instance following the setup instructions above.
+**Note:** This deployed version is rate limited and is intended for testing/sandbox use only. For production AI applications, we recommend self-hosting your own instance following the setup instructions above.
 
 ## Prerequisites
 
