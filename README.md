@@ -1,19 +1,19 @@
 # Shape MCP Server
 
-Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants with comprehensive access to Shape's onchain data: [gasback](https://docs.shape.network/gasback) distribution, collections analytics, stack users & more.
+Model Context Protocol (MCP) server for Shape, built with [xmcp](https://xmcp.dev). This server provides AI assistants access to Shape's onchain data: [gasback](https://docs.shape.network/gasback) distribution, collections analytics, stack users & more.
 
-Contributions are welcome! Fork and add your own tool, feel free to submit a PR.
+Contributions are welcome! Fork and add your own tools, feel free to submit a PR.
 
 ## 🚀 Features
 
 Organized by functionality for easy extension:
 
-- **💰 Gasback Analytics** - Track creator earnings, top performers, and simulate rewards
-- **🖼️ NFT Ecosystem Analysis** - Dive into collections and ownership patterns
-- **🏗️ Stack Achievements** - Monitor user progress in Shape's ecosystem
-- **⚡ Network Monitoring** - Keep tabs on chain health and metrics
-- **🤖 AI Framework Ready** - Tools optimized for agent chaining and automation
-- **⚡ Caching** - Optional Redis for snappier responses & less load on RPCs, no lock-in required
+- **Gasback Analytics** - Track creator earnings, top performers, and simulate gasback earned
+- **NFT Analysis** - Collections and ownership
+- **Stack Achievements** - Monitor user progress in Shape's [Stack](https://stack.shape.network) ecosystem
+- **Network Monitoring** - Chain health, metrics, RPC URLs, etc
+- **AI Ready** - Tools are optimized for agent chaining and automation
+- **Caching** - Optional Redis for snappier responses & less load on RPCs, no lock-in required
 
 ## 🛠 Available Tools
 
@@ -21,37 +21,51 @@ Organized by functionality for easy extension:
 
 #### `getChainStatus`
 
-Monitor Shape's network: RPC health, gas prices, block times. Use case: Agents checking if the chain's ready for mints. Example prompt: "is shape up? what's the gas like?"
+Monitor Shape's network: RPC health, gas prices, block times, etc.
+
+Example prompt: "current shape status? gas prices looking mint-friendly?"
 
 ### 🖼️ NFT Tools (`/tools/nft/`)
 
 #### `getCollectionAnalytics`
 
-Collection stats: supply, owners, samples, even OpenSea floors. Use case: Spot hot drops. Example prompt: "what's the vibe on collection 0x567...abc? floor price and top holders?"
+Collection stats: supply, owners, sample NFTs, floors, etc.
+
+Example prompt: "what's the vibe on collection 0x567...abc? floor price and top holders?"
 
 #### `getShapeNft`
 
-List NFTs for an address with metadata. Example prompt: "what NFTs does 0xabcd...123 hold on shape?"
+List NFTs for an address, with metadata.
+
+Example prompt: "what NFTs does 0xabcd...123 hold on shape?"
 
 ### 💰 Gasback Tools (`/tools/gasback/`)
 
 #### `getShapeCreatorAnalytics`
 
-Creator deep dive: earnings, tokens, withdrawals. Use case: Performance reviews. Example prompt: "how's creator 0xdef...766 doing on gasback?"
+Shape builder/creator deep dive: earnings, tokens, withdrawals, etc.
+
+Example prompt: "analyze creator 0xabcd...123's gasback and compare to top earners. any tips?"
 
 #### `getTopShapeCreators`
 
-Top earners with stats (multicall-optimized for speed). Use case: Leaderboards. Example prompt: "who are shape's top 10 gasback earners?"
+Top creators by gasback earned & tx.
+
+Example prompt: "who are shape's top 10 gasback earners?"
 
 #### `simulateGasbackRewards`
 
-Model rewards based on tx patterns. Use case: "What if" planning. Example prompt: "simulate 50 txs/day at 50k gas—earnings over 3 months?"
+Get gasback rough estimates.
+
+Example prompt: "simulate 50 txs/day at 50k gas—earnings over 3 months? wen lambo?"
 
 ### 🏗️ Stack Tools (`/tools/stack/`)
 
 #### `getStackAchievements`
 
-User medals by tier, total count. Use case: Progress tracking. Example prompt: "what's 0xghi...123's stack status? gold medals?"
+User medals by tier, total count, etc.
+
+Example prompt: "what's 0xghi...123's stack status? gold medals?"
 
 ## 🧪 Quick Test (No Setup Required)
 
@@ -102,11 +116,6 @@ yarn dev
 
 Server is now running at http://localhost:3002/mcp
 
-### 4. Deploy
-
-- **Vercel**: `vercel deploy`. Enable KV in dashboard for caching (or your own Redis instance with a provider like Upstash).
-- **Alternatives**: Docker build (`docker build -t shape-mcp .; docker run -p 3002:3002 shape-mcp`), or any Node host. Skip Vercel KV by setting `REDIS_URL` to your own instance.
-
 ## 🔌 Client Integration
 
 ### MCP Settings
@@ -117,39 +126,21 @@ Add to your MCP settings in Cursor for eg:
 {
   "mcpServers": {
     "shape-mcp": {
-      "url": "http://localhost:3002/mcp"
+      "url": "http://localhost:3002/mcp" // run locally
     }
   }
 }
 ```
-
-## 💡 Usage Examples
-
-### Basic Analysis
-
-"analyze creator 0xabcd...123's Gasback and compare to top earners. any tips?"
-
-### Network Check
-
-"current shape status? gas prices looking mint-friendly?"
-
-### Gasback Earning Simulation
-
-"simulate gasback earnings for a contract with 100 txs/day for 6 months straight. wen lambo?"
-
-### Full Chain
-
-"grab NFTs from 0x567...abc, check owner's stack, simulate their gasback potential."
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── tools/                  # Modular tools
-│   ├── gasback/            # Earnings and creator focus
-│   ├── network/            # Chain health tools
-│   ├── nft/                # Collection/ownership analysis
-│   └── stack/              # Achievement tracking
+│   ├── gasback/
+│   ├── network/
+│   ├── nft/
+│   └── stack/
 ├── abi/                    # Contract interfaces
 ├── utils/                  # Helpers like cache.ts
 ├── addresses.ts            # Key contracts addys
@@ -160,7 +151,7 @@ src/
 └── xmcp.config.ts          # xmcp server config
 ```
 
-Why this way? Categories keep things modular. Add a tool to /tools/gasback/ and xmcp auto-picks it up. No monolith mess.
+Categories keep things modular. Add a tool to /tools/gasback/ and xmcp auto-picks it up. No monolith mess.
 
 ## 🔧 Adding New Tools
 
@@ -214,10 +205,6 @@ Fork this repo and deploy your personal MCP:
 ## RPC Setup
 
 Use your own Alchemy API key to avoid public RPC limits. Default falls back to Shape’s public node `https://mainnet.shape.network` and `https://sepolia.shape.network`.
-
-## Optional Rate Limiting
-
-Add `middleware.ts` with express-rate-limit to cap usage (e.g., 100 reqs/min). Install: `npm i express-rate-limit`. Enable in `server.ts` if needed.
 
 ## 🌐 Resources
 
