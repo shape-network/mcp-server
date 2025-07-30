@@ -216,4 +216,6 @@ Use your own Alchemy API key to avoid public RPC limits. Default falls back to S
 
 Contact [@williamhzo](https://x.com/williamhzo) or hop into [Shape Discord](https://discord.com/invite/shape-l2).
 
-[MIT LICENSE](./LICENSE).
+---
+
+MIT LICENSE - [See LICENSE](./LICENSE)
