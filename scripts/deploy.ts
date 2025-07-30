@@ -32,9 +32,9 @@ async function main() {
   console.log('- Next Token ID:', await nftMinter.getNextTokenId());
 
   console.log('\n🌐 Explorer Links:');
-  console.log('- Contract:', `https://shape-sepolia.blockscout.com/address/${contractAddress}`);
+  console.log('- Contract:', `https://sepolia.shapescan.xyz/address/${contractAddress}`);
   if (deploymentTx) {
-    console.log('- Transaction:', `https://shape-sepolia.blockscout.com/tx/${deploymentTx.hash}`);
+    console.log('- Transaction:', `https://sepolia.shapescan.xyz/tx/${deploymentTx.hash}`);
   }
 
   console.log('\n🔧 Add this to your MCP server config:');
