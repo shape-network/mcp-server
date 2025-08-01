@@ -1,28 +1,21 @@
 import { ethers } from 'hardhat';
 
-async function main() {
+const main = async () => {
   console.log('🚀 Deploying NFTMinter to Shape Sepolia...');
 
-  // Get the contract factory
+  const [deployer] = await ethers.getSigners();
+  console.log('📋 Deploying from account:', deployer.address);
+
+  // Deploy NFTMinter
   const NFTMinter = await ethers.getContractFactory('NFTMinter');
+  const nftMinterContract = await NFTMinter.deploy();
+  await nftMinterContract.waitForDeployment();
 
-  // Deploy the contract
-  console.log('📝 Deploying contract...');
-  const nftMinter = await NFTMinter.deploy();
-
-  // Wait for deployment to be mined
-  await nftMinter.waitForDeployment();
-
-  const contractAddress = await nftMinter.getAddress();
-
+  const contractAddress = await nftMinterContract.getAddress();
   console.log('✅ NFTMinter deployed to:', contractAddress);
 
-  // Get deployment transaction details
-  const deploymentTx = nftMinter.deploymentTransaction();
-  if (deploymentTx) {
-    console.log('📦 Transaction hash:', deploymentTx.hash);
-    console.log('⛽ Gas used:', deploymentTx.gasLimit?.toString());
-  }
+  // Get contract instance for verification
+  const nftMinter = await ethers.getContractAt('NFTMinter', contractAddress);
 
   // Verify contract info
   console.log('\n📋 Contract Details:');
@@ -33,26 +26,11 @@ async function main() {
 
   console.log('\n🌐 Explorer Links:');
   console.log('- Contract:', `https://sepolia.shapescan.xyz/address/${contractAddress}`);
-  if (deploymentTx) {
-    console.log('- Transaction:', `https://sepolia.shapescan.xyz/tx/${deploymentTx.hash}`);
-  }
 
   console.log('\n🔧 Add this to your MCP server config:');
   console.log(`NFT_CONTRACT_ADDRESS=${contractAddress}`);
 
   return contractAddress;
-}
+};
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main()
-  .then((address) => {
-    console.log('🎉 Deployment completed successfully!');
-    console.log('🔧 Add this to your MCP server config:');
-    console.log(`NFT_CONTRACT_ADDRESS=${address}`);
-    process.exitCode = 0;
-  })
-  .catch((error) => {
-    console.error('❌ Deployment failed:', error);
-    process.exitCode = 1;
-  });
+main();
