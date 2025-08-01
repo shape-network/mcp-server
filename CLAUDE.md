@@ -92,6 +92,7 @@ The system defaults to public Shape RPC endpoints if no Alchemy key is provided.
 - Redis caching is optional and fails gracefully
 - Contract interactions use Viem with batch/multicall optimization
 - ENS resolution is done against Ethereum mainnet regardless of Shape network
+- Only add meaningful comments when necessary, when clarification is needed - do not state the obvious
 
 ### Useful Docs
 
