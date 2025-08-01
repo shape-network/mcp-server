@@ -1,39 +1,45 @@
-import { z } from 'zod';
 import { encodeFunctionData, isAddress, zeroAddress } from 'viem';
 import { addresses } from '../../addresses';
 import { abi as nftMinterAbi } from '../../abi/nftMinter';
 import type { ToolErrorOutput, PrepareMintSVGNFTOutput } from '../../types';
 import { shapeSepolia } from 'viem/chains';
+import { InferSchema } from 'xmcp';
+import { z } from 'zod';
 
 // Chain is hard-coded to Shape Sepolia for testing purposes
 const chainId = shapeSepolia.id;
 
-export const schema = z.object({
+export const schema = {
   recipientAddress: z
     .string()
     .refine((address) => isAddress(address), {
       message: 'Invalid address',
     })
     .describe('The wallet address to mint the NFT to'),
-  svgContent: z.string().min(1, 'SVG content cannot be empty'),
-  name: z.string().min(1, 'NFT name cannot be empty'),
-  description: z.string().optional().default('SVG NFT created via Shape MCP Server'),
-});
+  svgContent: z.string().describe('SVG content for the NFT'),
+  name: z.string().describe('NFT name'),
+  description: z.string().optional().describe('NFT description (optional)'),
+};
 
 export const metadata = {
   name: 'prepareMintSVGNFT',
   description: 'Prepare transaction data for minting an SVG NFT on Shape Sepolia testnet',
   annotations: {
     category: 'NFT',
-    requiresAuth: false, // This just prepares the transaction, doesn't execute it
+    requiresAuth: false,
     network: 'shape-sepolia',
-    cacheTTL: 0, // Don't cache since each request should be unique
+    cacheTTL: 0,
   },
 };
 
-export default async function prepareMintSVGNFT(params: z.infer<typeof schema>) {
+export default async function prepareMintSVGNFT(params: InferSchema<typeof schema>) {
   try {
-    const { recipientAddress, svgContent, name, description } = params;
+    const {
+      recipientAddress,
+      svgContent,
+      name,
+      description = 'SVG NFT created via Shape MCP Server',
+    } = params;
 
     const contractAddress = addresses.nftMinter[chainId];
 
