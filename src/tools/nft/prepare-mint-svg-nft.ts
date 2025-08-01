@@ -80,7 +80,7 @@ export default async function prepareMintSVGNFT(params: z.infer<typeof schema>) 
       transaction: transactionData,
       metadata: {
         contractAddress,
-        functionName: 'mintSVGNFT',
+        functionName: 'mintNFT',
         recipientAddress,
         tokenURI,
         nftMetadata: metadata,
@@ -108,7 +108,7 @@ export default async function prepareMintSVGNFT(params: z.infer<typeof schema>) 
   } catch (error) {
     const errorOutput: ToolErrorOutput = {
       error: true,
-      message: `Error fetching NFTs: ${
+      message: `Error preparing mint transaction: ${
         error instanceof Error ? error.message : 'Unknown error occurred'
       }`,
       ownerAddress: params.recipientAddress,
