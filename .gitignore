@@ -6,3 +6,8 @@ dist
 xmcp-env.d.ts
 .env
 .claude/settings.local.json
+
+# Hardhat build artifacts
+artifacts/
+cache/
+typechain-types/

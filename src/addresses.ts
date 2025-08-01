@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import { Address, zeroAddress } from 'viem';
 import { shape, shapeSepolia } from 'viem/chains';
 
 export const addresses: Record<string, Record<number, Address>> = {
@@ -9,5 +9,9 @@ export const addresses: Record<string, Record<number, Address>> = {
   stack: {
     [shape.id]: '0x76d6aC90A62Ca547d51D7AcAeD014167F81B9931',
     [shapeSepolia.id]: '0xaF94F7b7Dd601967E3ebdba052F5Ed6d215220b3',
+  },
+  nftMinter: {
+    [shapeSepolia.id]: '0xCD0d5cB95FA21671a3184742e360a783edBcaD5C',
+    [shape.id]: zeroAddress, // Replace with actual address when deployed to mainnet
   },
 };
