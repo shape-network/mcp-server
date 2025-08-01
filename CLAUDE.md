@@ -100,3 +100,8 @@ When interacting with the following libraries, always make sure you use them acc
 - viem: https://viem.sh/docs/getting-started
 - xmcp: https://xmcp.dev/docs
 - Open Zeppelin: https://docs.openzeppelin.com/
+
+### Links
+
+- shape sepolia explorer: https://sepolia.shapescan.xyz/
+- shape mainnet explorer: https://shapescan.xyz/
