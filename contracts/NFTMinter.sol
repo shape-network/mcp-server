@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+error CannotMintToZeroAddress();
+error TokenURICannotBeEmpty();
 
 contract NFTMinter is ERC721URIStorage, Ownable {
-    using Strings for uint256;
-
     uint256 private _nextTokenId;
 
     event NFTMinted(address indexed to, uint256 indexed tokenId, string tokenURI);
@@ -23,11 +24,11 @@ contract NFTMinter is ERC721URIStorage, Ownable {
      * @return tokenId The ID of the newly minted token
      */
     function mintNFT(address to, string memory tokenMetadataURI)
-        public
+        external
         returns (uint256)
     {
-        require(to != address(0), "Cannot mint to zero address");
-        require(bytes(tokenMetadataURI).length > 0, "Token URI cannot be empty");
+        if(to == address(0)) revert CannotMintToZeroAddress();
+        if(bytes(tokenMetadataURI).length == 0) revert TokenURICannotBeEmpty();
 
         uint256 tokenId = _nextTokenId++;
 
@@ -42,14 +43,14 @@ contract NFTMinter is ERC721URIStorage, Ownable {
     /**
      * @dev Get the next token ID that will be minted
      */
-    function getNextTokenId() public view returns (uint256) {
+    function getNextTokenId() external view returns (uint256) {
         return _nextTokenId;
     }
 
     /**
      * @dev Get total number of tokens minted
      */
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external view returns (uint256) {
         return _nextTokenId - 1;
     }
 
