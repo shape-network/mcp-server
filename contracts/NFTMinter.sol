@@ -23,7 +23,7 @@ contract NFTMinter is ERC721URIStorage, Ownable {
      * @param tokenMetadataURI Metadata URI for the NFT (can be data URI or IPFS)
      * @return tokenId The ID of the newly minted token
      */
-    function mintNFT(address to, string memory tokenMetadataURI)
+    function mintNFT(address to, string calldata tokenMetadataURI)
         external
         returns (uint256)
     {
