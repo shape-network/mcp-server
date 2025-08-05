@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, run } from 'hardhat';
 
 const main = async () => {
   console.log('🚀 Deploying NFTMinter to Shape Sepolia...');
@@ -6,7 +6,6 @@ const main = async () => {
   const [deployer] = await ethers.getSigners();
   console.log('📋 Deploying from account:', deployer.address);
 
-  // Deploy NFTMinter
   const NFTMinter = await ethers.getContractFactory('NFTMinter');
   const nftMinterContract = await NFTMinter.deploy();
   await nftMinterContract.waitForDeployment();
@@ -23,6 +22,12 @@ const main = async () => {
   console.log('- Symbol:', await nftMinter.symbol());
   console.log('- Owner:', await nftMinter.owner());
   console.log('- Next Token ID:', await nftMinter.getNextTokenId());
+
+  console.log('\n Verifying the on Shapescan...');
+  await run('verify:verify', {
+    address: contractAddress,
+    constructorArguments: [],
+  });
 
   console.log('\n🌐 Explorer Links:');
   console.log('- Contract:', `https://sepolia.shapescan.xyz/address/${contractAddress}`);
