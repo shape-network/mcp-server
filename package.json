@@ -47,6 +47,7 @@
     "@eslint/js": "^9.31.0",
     "@nomicfoundation/hardhat-ethers": "^3.1.0",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.1",
     "@openzeppelin/contracts": "^5.4.0",
     "@types/ioredis": "^5.0.0",
     "@types/node": "^24.1.0",
