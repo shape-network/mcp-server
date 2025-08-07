@@ -44,10 +44,10 @@ jobs:
           direct_prompt: |
             Please review this pull request and provide feedback on:
             - Potential bugs or issues
-            - Performance considerations
+            - Performance issues
             - Security concerns
 
-            Don't be too verbose, highlight the most important changes. Be constructive and helpful in your feedback.
+            Don't be too verbose, highlight the most important changes. Don't mention strengths, just focus on necessary improvements and critical issues. Be constructive and helpful in your feedback.
 
           # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
           # use_sticky_comment: true
