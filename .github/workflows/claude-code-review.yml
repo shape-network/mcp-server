@@ -47,7 +47,9 @@ jobs:
             - Performance issues
             - Security concerns
 
-            Don't be too verbose, highlight the most important changes. Don't mention strengths, just focus on necessary improvements and critical issues. Be constructive and helpful in your feedback.
+            Don't be too verbose, highlight the most important changes and issues, do not comment on the code that doesn't need to be changed.
+            Don't mention strengths, just focus on necessary improvements and critical issues.
+            Be constructive and helpful in your feedback.
 
           # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
           # use_sticky_comment: true
