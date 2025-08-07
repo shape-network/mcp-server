@@ -79,6 +79,7 @@ Required environment variables:
 - `CHAIN_ID` - 360 for mainnet, 11011 for testnet
 - `ALCHEMY_API_KEY` - For NFT data and RPC access
 - `REDIS_URL` - Optional for caching (gracefully degrades without it)
+- Server runs on port 3002 by default
 
 The system defaults to public Shape RPC endpoints if no Alchemy key is provided.
 
@@ -91,10 +92,17 @@ The system defaults to public Shape RPC endpoints if no Alchemy key is provided.
 - Redis caching is optional and fails gracefully
 - Contract interactions use Viem with batch/multicall optimization
 - ENS resolution is done against Ethereum mainnet regardless of Shape network
+- Only add meaningful comments when necessary, when clarification is needed - do not state the obvious
 
-### Deployment
+### Useful Docs
 
-- Configured for Vercel deployment with `vercel.json`
-- Can use Vercel KV for Redis caching in production
-- Docker support available
-- Server runs on port 3002 by default
+When interacting with the following libraries, always make sure you use them according to their official docs:
+
+- viem: https://viem.sh/docs/getting-started
+- xmcp: https://xmcp.dev/docs
+- Open Zeppelin: https://docs.openzeppelin.com/
+
+### Links
+
+- shape sepolia explorer: https://sepolia.shapescan.xyz/
+- shape mainnet explorer: https://shapescan.xyz/

@@ -106,3 +106,27 @@ export type TrendingCollectionsOutput = {
     mintCount: number;
   }>;
 };
+
+type TransactionData = {
+  to: Address;
+  data: string;
+  value: string;
+};
+
+export type PrepareMintSVGNFTOutput = {
+  success: boolean;
+  transaction: TransactionData;
+  metadata: {
+    contractAddress: Address;
+    functionName: string;
+    recipientAddress: Address;
+    tokenURI: string;
+    nftMetadata: Record<string, unknown>;
+    estimatedGas: string;
+    chainId: number;
+    explorerUrl: string;
+  };
+  instructions: {
+    nextSteps: string[];
+  };
+};

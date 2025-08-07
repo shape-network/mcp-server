@@ -31,7 +31,9 @@
     "format:check": "prettier --check .",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "lint:check": "eslint src --ext .ts,.tsx --max-warnings 0"
+    "lint:check": "eslint src --ext .ts,.tsx --max-warnings 0",
+    "deploy:nft": "npx hardhat run scripts/deploy.ts --network shapeSepolia",
+    "compile": "npx hardhat compile"
   },
   "dependencies": {
     "alchemy-sdk": "^3.6.1",
@@ -43,15 +45,24 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
+    "@nomicfoundation/hardhat-ethers": "^3.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.1",
+    "@openzeppelin/contracts": "^5.4.0",
     "@types/ioredis": "^5.0.0",
+    "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
+    "dotenv": "^17.2.1",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
+    "ethers": "^6.15.0",
+    "hardhat": "^2.26.1",
     "prettier": "^3.6.2",
     "swc-loader": "^0.2.6",
-    "typescript": "^5.8.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
     "typescript-eslint": "^8.38.0"
   }
 }
