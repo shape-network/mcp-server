@@ -21,6 +21,9 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
+    apiKey: {
+      shapeSepolia: '123', // Hardhat needs a key, even if not used
+    },
     customChains: [
       {
         network: 'shapeSepolia',
