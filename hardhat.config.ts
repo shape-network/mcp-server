@@ -22,15 +22,15 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      shapeSepolia: '123', // Hardhat needs a key, even if not used
+      shapeSepolia: 'abc123abc123abc123abc123abc123abc1', // 32 char dummy key, needed for hardhat verify
     },
     customChains: [
       {
         network: 'shapeSepolia',
         chainId: 11011,
         urls: {
-          apiURL: 'https://explorer-sepolia.shape.network/api',
-          browserURL: 'https://explorer-sepolia.shape.network',
+          apiURL: 'https://sepolia.shapescan.xyz/api',
+          browserURL: 'https://sepolia.shapescan.xyz',
         },
       },
     ],
