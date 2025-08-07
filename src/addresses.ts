@@ -11,7 +11,7 @@ export const addresses: Record<string, Record<number, Address>> = {
     [shapeSepolia.id]: '0xaF94F7b7Dd601967E3ebdba052F5Ed6d215220b3',
   },
   nftMinter: {
-    [shapeSepolia.id]: '0xCD0d5cB95FA21671a3184742e360a783edBcaD5C',
+    [shapeSepolia.id]: '0xf8C93f671e24A60f4c11612b2DFAC3DD83F41340',
     [shape.id]: zeroAddress, // Replace with actual address when deployed to mainnet
   },
 };
