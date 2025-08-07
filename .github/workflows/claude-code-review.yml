@@ -70,7 +70,7 @@ jobs:
           #   'Please provide a thorough code review focusing on our coding standards and best practices.' }}
 
           # Optional: Add specific tools for running tests or linting
-          # allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
+          allowed_tools: 'Bash(yarn lint),Bash(yarn build),Bash(yarn typecheck)'
 
           # Optional: Skip review for certain conditions
           # if: |
