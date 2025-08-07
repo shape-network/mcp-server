@@ -1385,6 +1385,11 @@
   resolved "https://registry.yarnpkg.com/@radix-ui/rect/-/rect-1.1.1.tgz#78244efe12930c56fd255d7923865857c41ac8cb"
   integrity sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==
 
+"@rarible/protocol-mcp@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@rarible/protocol-mcp/-/protocol-mcp-0.0.4.tgz#d4a842c66652122e988f31dba10895940117d9c1"
+  integrity sha512-ocNXRZDt9ETR+OYXFiIvFJYFoJiboxe1dj6Ex113vJx0vMQRPLKtPeEOSXyuZnwl6qzgwB8qdBbW3VF33ZtTow==
+
 "@redis/bloom@1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@redis/bloom/-/bloom-1.2.0.tgz#d3fd6d3c0af3ef92f26767b56414a370c7b63b71"
