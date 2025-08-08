@@ -120,3 +120,21 @@ export type NormalizedMarketStats = {
   totalItems: number | null;
   owners: number | null;
 };
+
+export type CollectionAnalyticsOutput = {
+  contractAddress: Address;
+  name: string | null;
+  symbol: string | null;
+  totalSupply: number | null;
+  owners: number | null;
+  floorPrice: number | null;
+};
+
+export type MarketStatsOutput = {
+  collection: Address;
+  floorPrice: number | null;
+  totalVolume: number | null;
+  totalItems: number | null;
+  owners: number | null;
+  note?: string;
+};

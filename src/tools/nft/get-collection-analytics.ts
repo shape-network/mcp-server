@@ -3,7 +3,7 @@ import { type InferSchema } from 'xmcp';
 import { isAddress } from 'viem';
 import { alchemy } from '../../clients';
 import { config } from '../../config';
-import type { CollectionAnalyticsOutput, ToolErrorOutput } from '../../types';
+import type { ToolErrorOutput, CollectionAnalyticsOutput } from '../../types';
 import { getCached, setCached } from '../../utils/cache';
 
 export const schema = {
@@ -18,7 +18,7 @@ export const schema = {
 export const metadata = {
   name: 'getCollectionAnalytics',
   description:
-    'Get NFT collection analytics: name, symbol, total supply, owner count, sample NFTs, marketplace floor prices, etc.',
+    'Get essential NFT collection analytics: name, symbol, total supply, owner count, and floor price.',
   annotations: {
     title: 'NFT Collection Analytics',
     readOnlyHint: true,
@@ -27,8 +27,8 @@ export const metadata = {
     requiresWallet: false,
     category: 'nft-analysis',
     educationalHint: true,
-    chainableWith: ['getShapeNft', 'simulateGasbackRewards'],
-    cacheTTL: 60 * 15, // 15 minutes
+    chainableWith: ['getShapeNft', 'getCollectionMarketStats'],
+    cacheTTL: 60 * 5, // 5 minutes
   },
 };
 
@@ -45,13 +45,10 @@ export default async function getCollectionAnalytics({
   try {
     const analytics: CollectionAnalyticsOutput = {
       contractAddress,
-      timestamp: new Date().toISOString(),
       name: null,
       symbol: null,
       totalSupply: null,
-      ownerCount: null,
-      contractType: null,
-      sampleNfts: [],
+      owners: null,
       floorPrice: null,
     };
 
@@ -71,21 +68,18 @@ export default async function getCollectionAnalytics({
       analytics.totalSupply = sampleNft.contract.totalSupply
         ? parseInt(sampleNft.contract.totalSupply)
         : null;
-      analytics.contractType = sampleNft.contract.tokenType || null;
-
-      analytics.sampleNfts = collectionResult.value.nfts.slice(0, 5).map((nft) => ({
-        tokenId: nft.tokenId,
-        name: nft.name || null,
-        imageUrl: nft.image?.originalUrl || nft.image?.thumbnailUrl || null,
-      }));
     }
 
     if (ownersResult.status === 'fulfilled') {
-      analytics.ownerCount = ownersResult.value.owners.length;
+      analytics.owners = ownersResult.value.owners.length ?? null;
     }
 
     if (floorPriceResult.status === 'fulfilled') {
-      analytics.floorPrice = floorPriceResult.value;
+      const openSea = floorPriceResult.value?.openSea as unknown;
+      if (openSea && typeof openSea === 'object' && 'floorPrice' in openSea) {
+        const fp = (openSea as { floorPrice?: number | null }).floorPrice;
+        analytics.floorPrice = fp ?? null;
+      }
     }
 
     const response = {
