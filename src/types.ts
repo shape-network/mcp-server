@@ -1,21 +1,4 @@
-import { GetFloorPriceResponse } from 'alchemy-sdk';
 import { Address } from 'viem';
-
-export type CollectionAnalyticsOutput = {
-  contractAddress: Address;
-  timestamp: string;
-  name: string | null;
-  symbol: string | null;
-  totalSupply: number | null;
-  ownerCount: number | null;
-  contractType: string | null;
-  sampleNfts: Array<{
-    tokenId: string;
-    name: string | null;
-    imageUrl: string | null;
-  }>;
-  floorPrice: GetFloorPriceResponse | null;
-};
 
 export type ShapeCreatorAnalyticsOutput = CreatorAnalytics & {
   timestamp: string;
@@ -129,4 +112,11 @@ export type PrepareMintSVGNFTOutput = {
   instructions: {
     nextSteps: string[];
   };
+};
+
+export type NormalizedMarketStats = {
+  floorPrice: number | null;
+  totalVolume: number | null;
+  totalItems: number | null;
+  owners: number | null;
 };
