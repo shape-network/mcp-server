@@ -98,11 +98,8 @@ export default async function getCollectionMarketStats({ collection }: InferSche
       apiKeyAuth: raribleApiKey,
     });
 
-    const collectionId = `SHAPE:${collection}`;
-    console.log(`Fetching Rarible stats for collection: ${collectionId}`);
-
     const statsResponse = await rarible.collectionStatistics.getGlobalCollectionStatistics({
-      id: collectionId,
+      id: `SHAPE:${collection}`,
     });
 
     if (!statsResponse) {
