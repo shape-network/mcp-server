@@ -127,7 +127,6 @@ export type CollectionAnalyticsOutput = {
   symbol: string | null;
   totalSupply: number | null;
   owners: number | null;
-  floorPrice: number | null;
 };
 
 export type MarketStatsOutput = {

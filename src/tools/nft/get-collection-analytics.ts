@@ -49,16 +49,14 @@ export default async function getCollectionAnalytics({
       symbol: null,
       totalSupply: null,
       owners: null,
-      floorPrice: null,
     };
 
-    const [collectionResult, ownersResult, floorPriceResult] = await Promise.allSettled([
+    const [collectionResult, ownersResult] = await Promise.allSettled([
       alchemy.nft.getNftsForContract(contractAddress, {
         pageSize: 10,
         omitMetadata: false,
       }),
       alchemy.nft.getOwnersForContract(contractAddress),
-      alchemy.nft.getFloorPrice(contractAddress),
     ]);
 
     if (collectionResult.status === 'fulfilled' && collectionResult.value.nfts.length > 0) {
@@ -72,14 +70,6 @@ export default async function getCollectionAnalytics({
 
     if (ownersResult.status === 'fulfilled') {
       analytics.owners = ownersResult.value.owners.length ?? null;
-    }
-
-    if (floorPriceResult.status === 'fulfilled') {
-      const openSea = floorPriceResult.value?.openSea as unknown;
-      if (openSea && typeof openSea === 'object' && 'floorPrice' in openSea) {
-        const fp = (openSea as { floorPrice?: number | null }).floorPrice;
-        analytics.floorPrice = fp ?? null;
-      }
     }
 
     const response = {

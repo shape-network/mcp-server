@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { RaribleProtocolMcp } from '@rarible/protocol-mcp';
 import { ToolErrorOutput, NormalizedMarketStats, MarketStatsOutput } from '../../types';
-// Helpers to adapt to Rarible's response shapes in a typed way
-// NormalizedMarketStats type imported from ../../types
 
 const amountSchema = z
   .object({
@@ -100,7 +98,6 @@ export default async function getCollectionMarketStats({ collection }: InferSche
       apiKeyAuth: raribleApiKey,
     });
 
-    // Try with SHAPE: prefix for Shape blockchain collections
     const collectionId = `SHAPE:${collection}`;
     console.log(`Fetching Rarible stats for collection: ${collectionId}`);
 
@@ -108,9 +105,6 @@ export default async function getCollectionMarketStats({ collection }: InferSche
       id: collectionId,
     });
 
-    console.log('Rarible response structure:', JSON.stringify(statsResponse, null, 2));
-
-    // Handle case where collection might not exist or have no data
     if (!statsResponse) {
       return {
         content: [
@@ -155,7 +149,6 @@ export default async function getCollectionMarketStats({ collection }: InferSche
 
     return response;
   } catch (error) {
-    // Validation errors may include a rawValue with valid stats; normalize if present.
     const rawValue = extractRawValueFromSdkError(error);
     const normalizedFromError = normalizeRaribleCollectionStats(rawValue);
     if (normalizedFromError) {
@@ -180,7 +173,6 @@ export default async function getCollectionMarketStats({ collection }: InferSche
       return response;
     }
 
-    // Provide detailed error information for debugging when no fallback is available
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error(`Market stats error for collection ${collection}:`, error);
 
