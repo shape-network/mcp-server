@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type InferSchema } from 'xmcp';
 import { RaribleProtocolMcp } from '@rarible/protocol-mcp';
-import { ToolErrorOutput, NormalizedMarketStats } from '../../types';
+import { ToolErrorOutput, NormalizedMarketStats, MarketStatsOutput } from '../../types';
 // Helpers to adapt to Rarible's response shapes in a typed way
 // NormalizedMarketStats type imported from ../../types
 
@@ -134,7 +134,7 @@ export default async function getCollectionMarketStats({ collection }: InferSche
     }
 
     const normalized = normalizeRaribleCollectionStats(statsResponse);
-    const marketStats = {
+    const marketStats: MarketStatsOutput = {
       collection,
       floorPrice: normalized?.floorPrice ?? null,
       totalVolume: normalized?.totalVolume ?? null,
@@ -159,7 +159,7 @@ export default async function getCollectionMarketStats({ collection }: InferSche
     const rawValue = extractRawValueFromSdkError(error);
     const normalizedFromError = normalizeRaribleCollectionStats(rawValue);
     if (normalizedFromError) {
-      const marketStats = {
+      const marketStats: MarketStatsOutput = {
         collection,
         floorPrice: normalizedFromError.floorPrice,
         totalVolume: normalizedFromError.totalVolume,
